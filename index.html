@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MisterClean provides professional sofa, carpet, mattress and outdoor pressure cleaning services across Adelaide.">
+    <title>MisterClean | Professional Cleaning Adelaide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#home" aria-label="MisterClean home">
+        <img class="brand-logo" src="Images/logo.webp" alt="MisterClean Services">
+      </a>
+      <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+      </button>
+      <nav class="site-nav" aria-label="Main navigation">
+        <div class="nav-item dropdown">
+          <button class="services-toggle" type="button" aria-expanded="false" aria-controls="services-menu">
+            Services
+            <span aria-hidden="true">&#9662;</span>
+          </button>
+          <div class="dropdown-menu" id="services-menu">
+            <a href="#sofa">Sofa cleaning</a>
+            <a href="#chair">Chair cleaning</a>
+            <a href="#carpet">Carpet cleaning</a>
+            <a href="#mattress">Mattress cleaning</a>
+            <a href="#outdoor">Outdoor cleaning</a>
+          </div>
+        </div>
+        <a href="#size-guide">Size guide</a>
+        <a href="#service-area">Map</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="header-actions">
+        <a class="header-phone" href="tel:+61474597325" aria-label="Call MisterClean on 0474 597 325">0474 597 325</a>
+        <a class="header-cta" href="https://widget.zenbooker.com/book/misterclean">Book now</a>
+      </div>
+    </header>
+
+    <main id="home">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Residential cleaning in Adelaide</p>
+          <h1>Professional deep cleaning for fresher homes in Adelaide.</h1>
+          <p class="hero-text">MisterClean restores sofas, carpets, rugs, mattresses and outdoor surfaces with targeted treatments, steam cleaning and powerful extraction.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="https://widget.zenbooker.com/book/misterclean">Book in 2 minutes</a>
+            <a class="button secondary" href="#offers">See services and rates</a>
+          </div>
+          <div class="hero-stats" aria-label="Service highlights">
+            <span><strong>Pay after</strong> the service</span>
+            <span><strong>All fabrics</strong> handled</span>
+            <span><strong>Adelaide</strong> wide</span>
+          </div>
+        </div>
+        <div class="hero-media" aria-label="Clean living room">
+          <img src="assets/hero-clean-living-room.png" alt="Freshly cleaned bright living room with sofa and carpet">
+        </div>
+      </section>
+
+      <section class="service-strip" id="services" aria-label="Cleaning services">
+        <a href="#sofa">Sofa cleaning</a>
+        <a href="#chair">Chair cleaning</a>
+        <a href="#carpet">Carpet and rug cleaning</a>
+        <a href="#mattress">Mattress cleaning</a>
+        <a href="#outdoor">Outdoor pressure cleaning</a>
+      </section>
+
+      <section class="intro-section">
+        <div>
+          <p class="eyebrow">Why MisterClean</p>
+          <h2>Clean results without complicated quoting.</h2>
+        </div>
+        <div class="intro-grid">
+          <article>
+            <span>01</span>
+            <h3>Clear prices</h3>
+            <p>Most indoor services can be booked online with upfront rates based on furniture, room or mattress size.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Deep treatment</h3>
+            <p>Steam cleaning and injector-extractor methods help remove embedded dirt, allergens, bacteria and odours.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Material care</h3>
+            <p>Fabric, leather, velvet, wool, synthetic fibres and delicate blends are treated with suitable products.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="offers" id="offers">
+        <div class="section-heading">
+          <p class="eyebrow">Offers</p>
+          <h2>Book the right clean for your home.</h2>
+        </div>
+
+        <article class="offer-block" id="sofa">
+          <div class="offer-copy">
+            <p class="eyebrow">Sofa cleaning</p>
+            <h3>Fabrics, leather, velvet? No problem.</h3>
+            <p>Whether it is grease, wine, ink, blood, mould, urine or sweat, MisterClean uses professional techniques to remove stains deep within your upholstery and restore your furniture.</p>
+            <a class="text-link" href="https://widget.zenbooker.com/book/misterclean">Book sofa cleaning</a>
+          </div>
+          <div class="price-grid three">
+            <div class="price-card">
+              <span>Sofa up to 3 seats</span>
+              <strong>$110</strong>
+            </div>
+            <div class="price-card">
+              <span>Sofa 4 seats</span>
+              <strong>$135</strong>
+            </div>
+            <div class="price-card">
+              <span>Sofa 5 seats and plus</span>
+              <strong>$170</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="offer-block" id="chair">
+          <div class="offer-copy">
+            <p class="eyebrow">Chair cleaning</p>
+            <h3>Refresh individual chairs and armchairs.</h3>
+            <p>Professional upholstery cleaning for everyday marks, spills, odours and built-up dirt. Each chair is treated according to its material and condition.</p>
+            <a class="text-link" href="https://widget.zenbooker.com/book/misterclean">Book chair cleaning</a>
+          </div>
+          <div class="price-grid">
+            <div class="price-card">
+              <span>Dining chair</span>
+              <strong>$30</strong>
+            </div>
+            <div class="price-card">
+              <span>Arm chair</span>
+              <strong>$60</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="offer-block image-left" id="carpet">
+          <div class="offer-image">
+            <img src="assets/hero-clean-living-room.png" alt="Bright clean carpet and living space">
+          </div>
+          <div class="offer-copy">
+            <p class="eyebrow">Carpet and rugs</p>
+            <h3>Rug, wool or synthetic? Expert deep-cleaning.</h3>
+            <p>Steam cleaning breaks down embedded dirt, eliminates bacteria, dust mites and allergens, loosens stubborn stains, neutralises odours and refreshes carpet texture.</p>
+            <div class="compact-prices">
+              <span><em>Rug</em><strong>$50</strong></span>
+              <span><em>Staircase</em><strong>$60</strong></span>
+              <span><em>Carpet room size 15 m2</em><strong>$89</strong></span>
+              <span><em>Carpet lounge size +15 m2</em><strong>$120</strong></span>
+            </div>
+            <a class="text-link" href="https://widget.zenbooker.com/book/misterclean">Book carpet cleaning</a>
+          </div>
+        </article>
+
+        <article class="offer-block" id="mattress">
+          <div class="offer-copy">
+            <p class="eyebrow">Mattress cleaning</p>
+            <h3>We remove stains and dust mites from your mattress.</h3>
+            <p>Deep cleaning, disinfection and anti-dust-mite treatment help reduce allergies, eliminate odours and create a healthier sleeping environment.</p>
+            <p class="subtle">Available throughout Adelaide and surrounding suburbs including Adelaide CBD, North Adelaide, Glenelg, Unley, Norwood, Prospect, Henley Beach, Burnside, Mawson Lakes and more.</p>
+            <a class="text-link" href="https://widget.zenbooker.com/book/misterclean">Book mattress cleaning</a>
+          </div>
+          <div class="price-grid three">
+            <div class="price-card">
+              <span>Single bed</span>
+              <strong>$99</strong>
+            </div>
+            <div class="price-card">
+              <span>Queen size</span>
+              <strong>$140</strong>
+            </div>
+            <div class="price-card">
+              <span>King size</span>
+              <strong>$170</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="outdoor-panel" id="outdoor">
+          <div class="outdoor-media">
+            <img src="assets/outdoor-pressure-cleaning.png" alt="Driveway after pressure cleaning">
+          </div>
+          <div class="outdoor-content">
+            <p class="eyebrow">Outdoor pressure cleaning</p>
+            <h3>Blast away the grime, shine every time.</h3>
+            <p>Revitalise your property with pressure cleaning for pathways, driveways, decks, retaining walls, pergolas, fences, walls, windows, outdoor furniture, paving and concrete sealing.</p>
+            <div class="package-list">
+              <span><em>Basic driveway package</em><strong>$4/sqm</strong></span>
+              <span><em>Premium driveway package</em><strong>$6.5/sqm</strong></span>
+              <span><em>Basic house package</em><strong>$3.5/sqm</strong></span>
+              <span><em>Premium house package</em><strong>$6/sqm</strong></span>
+            </div>
+            <a class="button primary" href="#contact">Request quote</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="size-guide" id="size-guide" aria-labelledby="size-guide-title">
+        <div class="size-guide-heading">
+          <p class="eyebrow">Size guide</p>
+          <h2 id="size-guide-title">Here is your size guide.</h2>
+        </div>
+        <div class="guide-grid">
+          <article>
+            <h3>Mattress</h3>
+            <dl>
+              <div><dt>Single bed</dt><dd>100 x 200 cm</dd></div>
+              <div><dt>Queen bed</dt><dd>160 x 200 cm</dd></div>
+              <div><dt>King bed</dt><dd>180 x 200 cm</dd></div>
+            </dl>
+          </article>
+          <article>
+            <h3>Sofa</h3>
+            <dl>
+              <div><dt>Up to 3 seats</dt><dd>Up to 244 cm</dd></div>
+              <div><dt>4 seats</dt><dd>245 to 305 cm</dd></div>
+              <div><dt>5 seats or more</dt><dd>305 cm+</dd></div>
+            </dl>
+          </article>
+          <article>
+            <h3>Carpet</h3>
+            <dl>
+              <div><dt>Room size</dt><dd>Up to 15 m2</dd></div>
+              <div><dt>Lounge size</dt><dd>15 m2+</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section class="process">
+        <div class="section-heading">
+          <p class="eyebrow">Process</p>
+          <h2>From booking to a fresher room.</h2>
+        </div>
+        <div class="process-steps">
+          <article>
+            <span>1</span>
+            <h3>Choose your service</h3>
+            <p>Select the item or surface that needs cleaning and use the online booking link.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h3>Professional clean</h3>
+            <p>MisterClean applies the right stain treatment, steam or pressure cleaning method.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h3>Pay after service</h3>
+            <p>Payment is made after the service, once the work at your home is complete.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="reviews" aria-labelledby="reviews-title">
+        <div class="reviews-intro">
+          <p class="eyebrow">Google reviews</p>
+          <h2 id="reviews-title">Trusted by Adelaide homes.</h2>
+          <p>See feedback from customers who have booked MisterClean for upholstery and carpet cleaning.</p>
+          <a class="text-link" href="https://www.google.com/search?q=MisterClean+Adelaide+reviews" target="_blank" rel="noreferrer">Read customer reviews on Google</a>
+        </div>
+        <div class="reviews-widget">
+          <!-- Elfsight Google Reviews -->
+          <script src="https://elfsightcdn.com/platform.js" async></script>
+          <div class="elfsight-app-beea3596-2e60-4436-a105-860a1476842c" data-elfsight-app-lazy></div>
+        </div>
+      </section>
+
+      <section class="service-area" id="service-area" aria-labelledby="service-area-title">
+        <div class="service-area-copy">
+          <p class="eyebrow">Service area</p>
+          <h2 id="service-area-title">Across Adelaide and surrounding suburbs.</h2>
+          <p>MisterClean provides in-home cleaning across Adelaide metro and the surrounding regions listed below.</p>
+          <div class="area-list" aria-label="Main service locations">
+            <span>Adelaide CBD</span>
+            <span>North Adelaide</span>
+            <span>Glenelg</span>
+            <span>Unley</span>
+            <span>Norwood</span>
+            <span>Prospect</span>
+            <span>Henley Beach</span>
+            <span>Burnside</span>
+            <span>Mawson Lakes</span>
+            <span>Semaphore</span>
+            <span>Port Adelaide</span>
+            <span>Brighton</span>
+            <span>Modbury</span>
+            <span>Paradise</span>
+            <span>Salisbury</span>
+            <span>Campbelltown</span>
+            <span>Happy Valley</span>
+            <span>West Lakes</span>
+            <span>Tea Tree Gully</span>
+            <span>Holden Hill</span>
+            <span>Enfield</span>
+            <span>Morphett Vale</span>
+            <span>Christies Beach</span>
+            <span>Mount Barker</span>
+            <span>Gawler</span>
+            <span>Murray Bridge</span>
+            <span>Hahndorf</span>
+            <span>And more</span>
+          </div>
+        </div>
+        <div class="service-map" id="service-map" aria-label="Interactive map showing the MisterClean service area in Adelaide">
+          <p class="map-fallback">MisterClean services Adelaide metro and surrounding suburbs.</p>
+        </div>
+      </section>
+
+      <section class="contact-section" id="contact">
+        <div class="contact-copy">
+          <p class="eyebrow">Custom cleaning request</p>
+          <h2>A specific job? Start with the details.</h2>
+          <p>Outdoor surfaces, multiple rooms and difficult stains are assessed individually. Tell us what needs attention and we will prepare the right approach.</p>
+          <div class="contact-points" aria-label="Information to include">
+            <span>What needs cleaning</span>
+            <span>Approximate dimensions</span>
+            <span>Stains or problem areas</span>
+          </div>
+          <a class="contact-booking-link" href="https://widget.zenbooker.com/book/misterclean">Booking a standard service? Book online.</a>
+        </div>
+        <div class="contact-panel">
+          <div class="contact-panel-heading">
+            <p>Request a quote</p>
+            <span>We will review your request.</span>
+          </div>
+          <form class="contact-form" id="contact-form" method="post" novalidate>
+            <div class="form-row">
+              <label>
+                First name
+                <input type="text" name="name" autocomplete="given-name" placeholder="First name" required>
+              </label>
+              <label>
+                Last name
+                <input type="text" name="last-name" autocomplete="family-name" placeholder="Last name" required>
+              </label>
+            </div>
+            <label>
+              Email address
+              <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+            </label>
+            <label>
+              Your request
+              <textarea name="message" rows="5" placeholder="For example: outdoor driveway, approx. 35 m2, oil stains" required></textarea>
+            </label>
+            <div class="form-action">
+              <button class="button primary" type="submit">Send request</button>
+              <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <img class="footer-logo" src="Images/logo.webp" alt="MisterClean Services">
+        <p>Professional cleaning services across Adelaide.</p>
+      </div>
+      <div class="footer-links">
+        <a href="#services">Services</a>
+        <a href="#offers">Prices</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>

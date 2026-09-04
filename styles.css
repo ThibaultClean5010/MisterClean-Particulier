@@ -187,11 +187,21 @@ textarea { min-height: 132px; resize: vertical; }
 .form-status.is-error { color: #a62e24; }
 .form-honeypot { display: none; }
 
-.site-footer { display: flex; justify-content: space-between; gap: 28px; padding: 38px clamp(20px, 5vw, 72px); background: #fff; }
-.site-footer p { margin-bottom: 0; }
-.footer-logo { width: 170px; height: auto; margin-bottom: 10px; }
-.footer-links { display: flex; gap: 22px; align-items: flex-start; color: var(--ink-soft); font-weight: 700; }
-.footer-links a:hover { color: var(--blue-dark); }
+.site-footer { padding: clamp(56px, 7vw, 92px) clamp(20px, 5vw, 72px) 28px; color: #e3f6ff; background: var(--ink); }
+.footer-main { display: grid; grid-template-columns: minmax(220px, 1.05fr) repeat(3, minmax(170px, 1fr)); gap: clamp(32px, 5vw, 84px); max-width: 1440px; margin: 0 auto; }
+.footer-intro { max-width: 290px; }
+.footer-intro p { margin: 0; color: #d1e3ec; font-size: 1.04rem; line-height: 1.7; }
+.footer-column h2 { margin: 0 0 22px; color: #fff; font-size: 0.95rem; text-transform: uppercase; }
+.footer-links { display: grid; gap: 13px; }
+.footer-links a, .footer-contact a, .footer-contact p { color: #d1e3ec; font-size: 0.98rem; }
+.footer-links a, .footer-contact a { width: fit-content; transition: color 160ms ease, transform 160ms ease; }
+.footer-links a:hover, .footer-contact a:hover { color: var(--green); transform: translateX(3px); }
+.footer-contact { display: grid; align-content: start; gap: 13px; }
+.footer-contact h2 { margin-bottom: 9px; }
+.footer-contact p { margin: 0; }
+.footer-bottom { display: flex; justify-content: space-between; gap: 24px; max-width: 1440px; margin: clamp(48px, 6vw, 82px) auto 0; padding-top: 28px; border-top: 1px solid rgba(209, 227, 236, 0.2); }
+.footer-bottom p, .footer-bottom a { margin: 0; color: #d1e3ec; font-size: 0.92rem; }
+.footer-bottom a:hover { color: var(--green); }
 
 @media (max-width: 980px) {
   .site-header { grid-template-columns: auto auto; justify-content: space-between; }
@@ -208,6 +218,7 @@ textarea { min-height: 132px; resize: vertical; }
   .hero { min-height: auto; }
   .hero-media, .offer-image, .outdoor-media { min-height: 360px; }
   .service-strip, .intro-grid, .guide-grid, .process-steps, .price-grid.three { grid-template-columns: repeat(2, 1fr); }
+  .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 28px; }
   .intro-grid article:nth-child(2), .process-steps article:nth-child(2) { border-right: 0; }
   .intro-grid article:last-child, .guide-grid article:last-child, .process-steps article:last-child { grid-column: 1 / -1; border-top: 1px solid var(--line-strong); }
   .guide-grid article:nth-child(2) { border-right: 0; }
@@ -238,8 +249,9 @@ textarea { min-height: 132px; resize: vertical; }
   .service-map { min-height: 330px; }
   .service-map.leaflet-container { min-height: 323px; }
   .area-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .site-footer { gap: 22px; }
-  .footer-links { flex-wrap: wrap; }
+  .footer-main { grid-template-columns: 1fr; gap: 34px; }
+  .footer-intro { max-width: none; }
+  .footer-bottom { display: grid; gap: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

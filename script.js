@@ -3,6 +3,7 @@ const siteNav = document.querySelector(".site-nav");
 const dropdown = document.querySelector(".dropdown");
 const servicesToggle = document.querySelector(".services-toggle");
 const serviceMapElement = document.querySelector("#service-map");
+const workCarousel = document.querySelector("[data-work-carousel]");
 
 navToggle?.addEventListener("click", () => {
   const isOpen = siteNav.classList.toggle("is-open");
@@ -33,6 +34,27 @@ document.addEventListener("click", () => {
   servicesToggle?.setAttribute("aria-expanded", "false");
 });
 
+if (workCarousel) {
+  const track = workCarousel.querySelector(".carousel-track");
+  const slides = Array.from(workCarousel.querySelectorAll(".carousel-slide"));
+  const previousButton = document.querySelector("[data-carousel-previous]");
+  const nextButton = document.querySelector("[data-carousel-next]");
+  const count = document.querySelector("[data-carousel-count]");
+  let currentSlide = 0;
+
+  const showSlide = (index) => {
+    currentSlide = (index + slides.length) % slides.length;
+    track.style.transform = `translateX(-${currentSlide * 100}%)`;
+    count.textContent = `${currentSlide + 1} / ${slides.length}`;
+    slides.forEach((slide, slideIndex) => {
+      slide.setAttribute("aria-hidden", String(slideIndex !== currentSlide));
+    });
+  };
+
+  previousButton?.addEventListener("click", () => showSlide(currentSlide - 1));
+  nextButton?.addEventListener("click", () => showSlide(currentSlide + 1));
+}
+
 if (serviceMapElement && window.L) {
   const adelaide = [-34.9285, 138.6007];
   const map = window.L.map(serviceMapElement, {
@@ -48,7 +70,7 @@ if (serviceMapElement && window.L) {
     color: "#08749f",
     fillColor: "#13aee8",
     fillOpacity: 0.32,
-    radius: 70000,
+    radius: 35000,
     weight: 3,
   }).bindPopup("MisterClean service area: Adelaide metro and surrounding regions.").addTo(map);
 

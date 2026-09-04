@@ -107,7 +107,7 @@ h3 { margin-bottom: 14px; font-size: clamp(1.55rem, 2.3vw, 2.45rem); line-height
 .price-card { display: flex; min-height: 176px; flex-direction: column; justify-content: space-between; padding: 22px; background: #fff; border: 1px solid var(--line); border-top: 5px solid var(--green); transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
 .price-card:hover { border-color: var(--blue-dark); box-shadow: 0 12px 24px rgba(16, 35, 45, 0.11); transform: translateY(-4px); }
 .price-card span { color: var(--muted); font-size: 0.93rem; font-weight: 600; }
-.price-card strong { font-size: clamp(2rem, 3vw, 3rem); line-height: 1; }
+.price-card strong { color: var(--blue-deep); font-size: clamp(2rem, 3vw, 3rem); line-height: 1; }
 .offer-image, .outdoor-media { min-height: 420px; overflow: hidden; border: 1px solid var(--line-strong); }
 .compact-prices, .package-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 26px 0; }
 .compact-prices span, .package-list span { display: flex; min-height: 112px; flex-direction: column; justify-content: space-between; gap: 14px; padding: 18px; color: var(--muted); background: var(--surface-alt); border: 1px solid var(--line); border-top: 5px solid var(--green); transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease; }
@@ -185,6 +185,7 @@ textarea { min-height: 132px; resize: vertical; }
 .form-action { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 4px; }
 .form-status { margin: 0; color: var(--blue-deep); font-size: 0.9rem; font-weight: 600; }
 .form-status.is-error { color: #a62e24; }
+.form-honeypot { display: none; }
 
 .site-footer { display: flex; justify-content: space-between; gap: 28px; padding: 38px clamp(20px, 5vw, 72px); background: #fff; }
 .site-footer p { margin-bottom: 0; }

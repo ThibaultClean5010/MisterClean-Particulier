@@ -2,8 +2,6 @@ const navToggle = document.querySelector(".nav-toggle");
 const siteNav = document.querySelector(".site-nav");
 const dropdown = document.querySelector(".dropdown");
 const servicesToggle = document.querySelector(".services-toggle");
-const contactForm = document.querySelector("#contact-form");
-const formStatus = document.querySelector("#form-status");
 const serviceMapElement = document.querySelector("#service-map");
 
 navToggle?.addEventListener("click", () => {
@@ -33,28 +31,6 @@ siteNav?.addEventListener("click", (event) => {
 document.addEventListener("click", () => {
   dropdown?.classList.remove("is-open");
   servicesToggle?.setAttribute("aria-expanded", "false");
-});
-
-contactForm?.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const fields = Array.from(contactForm.querySelectorAll("input[required], textarea[required]"));
-  const hasInvalidField = fields.some((field) => !field.checkValidity());
-
-  fields.forEach((field) => {
-    field.setAttribute("aria-invalid", String(!field.checkValidity()));
-  });
-
-  if (hasInvalidField) {
-    formStatus.textContent = "Please complete the required fields.";
-    formStatus.classList.add("is-error");
-    contactForm.querySelector("[aria-invalid='true']")?.focus();
-    return;
-  }
-
-  formStatus.textContent = "Thank you. Your request is ready for the MisterClean team.";
-  formStatus.classList.remove("is-error");
-  contactForm.reset();
 });
 
 if (serviceMapElement && window.L) {

@@ -1,0 +1,31 @@
+.env*
+.git
+.vercel
+coverage
+dist
+node_modules
+tests
+supabase
+
+# Only images used by the public site and booking page are needed in the build.
+Images/*
+!Images/logo.webp
+!Images/Carpet.jpeg
+!Images/Sofa Alex lean.png
+!Images/Sofa up to 3 seats.png
+!Images/Sofa up to 4 seats.png
+!Images/Sofa up to 5 seats.png
+!Images/Working 2.png
+!Images/Working 5.jpeg
+!Images/Working 6.jpeg
+!Images/dirty sofa alex 1_2.jpg
+!Images/Couch 4 places dirty .jpg
+!Images/Couch 4 places clean.jpg
+!Images/Chaise salle a manger.png
+!Images/Fauteuil.png
+!Images/Matelas Single.png
+!Images/Matelas Queen.png
+!Images/Matelas King.png
+
+# This source image is intentionally not part of the current public build.
+assets/hero-clean-living-room.png

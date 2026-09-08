@@ -37,22 +37,27 @@ document.addEventListener("click", () => {
 if (workCarousel) {
   const track = workCarousel.querySelector(".carousel-track");
   const slides = Array.from(workCarousel.querySelectorAll(".carousel-slide"));
-  const previousButton = document.querySelector("[data-carousel-previous]");
-  const nextButton = document.querySelector("[data-carousel-next]");
-  const count = document.querySelector("[data-carousel-count]");
   let currentSlide = 0;
+  let autoplayId;
 
   const showSlide = (index) => {
     currentSlide = (index + slides.length) % slides.length;
     track.style.transform = `translateX(-${currentSlide * 100}%)`;
-    count.textContent = `${currentSlide + 1} / ${slides.length}`;
     slides.forEach((slide, slideIndex) => {
       slide.setAttribute("aria-hidden", String(slideIndex !== currentSlide));
     });
   };
 
-  previousButton?.addEventListener("click", () => showSlide(currentSlide - 1));
-  nextButton?.addEventListener("click", () => showSlide(currentSlide + 1));
+  const stopAutoplay = () => window.clearInterval(autoplayId);
+  const startAutoplay = () => {
+    stopAutoplay();
+    if (slides.length > 1 && !document.hidden && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      autoplayId = window.setInterval(() => showSlide(currentSlide + 1), 3500);
+    }
+  };
+
+  document.addEventListener("visibilitychange", startAutoplay);
+  startAutoplay();
 }
 
 if (serviceMapElement && window.L) {
@@ -70,9 +75,9 @@ if (serviceMapElement && window.L) {
     color: "#08749f",
     fillColor: "#13aee8",
     fillOpacity: 0.32,
-    radius: 35000,
+    radius: 17500,
     weight: 3,
-  }).bindPopup("MisterClean service area: Adelaide metro and surrounding regions.").addTo(map);
+  }).bindPopup("MisterClean service area: Adelaide and surrounding areas.").addTo(map);
 
   map.fitBounds(serviceArea.getBounds(), { padding: [28, 28] });
 

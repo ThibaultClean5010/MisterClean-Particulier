@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Book a MisterClean home cleaning service in Adelaide.">
+    <title>Book a cleaning | MisterClean Adelaide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/booking/booking.css">
+  </head>
+  <body class="booking-page">
+    <header class="booking-header">
+      <a href="/" aria-label="Back to MisterClean home"><img src="/Images/logo.webp" alt="MisterClean Services"></a>
+      <a href="tel:+61474597325">Need help? 0474 597 325</a>
+    </header>
+
+    <main class="booking-shell">
+      <div class="booking-intro">
+        <p class="eyebrow">Online booking</p>
+        <h1>Book your clean.</h1>
+        <p>Choose one or more services and an available time. Pay directly after the service.</p>
+      </div>
+
+      <section class="booking-panel" aria-labelledby="booking-title">
+        <div class="booking-progress">
+          <p><span data-step-number>1</span> of 7</p>
+          <div class="progress-track" aria-hidden="true"><span data-progress-bar></span></div>
+          <p data-step-label>Services</p>
+        </div>
+
+        <form id="booking-form" novalidate>
+          <section class="booking-step is-active" data-step="1">
+            <p class="eyebrow">Step 1</p>
+            <h2 id="booking-title">Choose your services</h2>
+            <p class="service-help">Select every service you would like us to complete during this visit.</p>
+            <div class="service-options" data-service-options aria-live="polite">
+              <p>Loading services…</p>
+            </div>
+            <p class="service-selection" data-service-selection hidden></p>
+          </section>
+
+          <section class="booking-step" data-step="2" hidden>
+            <p class="eyebrow">Step 2</p>
+            <h2>Where should we come?</h2>
+            <div class="booking-fields">
+              <label>Street address<input name="addressLine1" autocomplete="address-line1" required maxlength="160"></label>
+              <label>Apartment, unit or access details <span>(optional)</span><input name="addressLine2" autocomplete="address-line2" maxlength="160"></label>
+              <div class="form-row">
+                <label>Suburb<input name="suburb" autocomplete="address-level2" required maxlength="100"></label>
+                <label>Postcode<input name="postcode" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4}" required maxlength="4"></label>
+              </div>
+              <input type="hidden" name="state" value="SA">
+            </div>
+          </section>
+
+          <section class="booking-step" data-step="3" hidden>
+            <p class="eyebrow">Step 3</p>
+            <h2>Choose a date</h2>
+            <label class="date-field">Preferred date<input type="date" name="date" required></label>
+            <p class="field-help" data-date-help></p>
+          </section>
+
+          <section class="booking-step" data-step="4" hidden>
+            <p class="eyebrow">Step 4</p>
+            <h2>Choose an available time</h2>
+            <p class="selected-date" data-selected-date></p>
+            <div class="slot-options" data-slot-options aria-live="polite"></div>
+          </section>
+
+          <section class="booking-step" data-step="5" hidden>
+            <p class="eyebrow">Step 5</p>
+            <h2>Your details</h2>
+            <div class="booking-fields">
+              <div class="form-row">
+                <label>First name<input name="firstName" autocomplete="given-name" required maxlength="80"></label>
+                <label>Last name<input name="lastName" autocomplete="family-name" required maxlength="80"></label>
+              </div>
+              <label>Email<input type="email" name="email" autocomplete="email" required maxlength="254"></label>
+              <label>Phone<input type="tel" name="phone" autocomplete="tel" required maxlength="40"></label>
+              <label>Anything we should know? <span>(optional)</span><textarea name="notes" rows="4" maxlength="1000" placeholder="Parking, access, stains or other useful details"></textarea></label>
+              <label class="booking-honeypot" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+            </div>
+          </section>
+
+          <section class="booking-step" data-step="6" hidden>
+            <p class="eyebrow">Step 6</p>
+            <h2>Check and confirm</h2>
+            <div class="booking-summary" data-booking-summary></div>
+            <p class="payment-note"><strong>No online payment.</strong> Payment is made directly after the service.</p>
+          </section>
+
+          <section class="booking-step booking-success" data-step="7" hidden tabindex="-1">
+            <p class="success-mark" aria-hidden="true">✓</p>
+            <p class="eyebrow">Booking confirmed</p>
+            <h2>You're all booked.</h2>
+            <p>Your reference is <strong data-booking-reference></strong>.</p>
+            <p>We have sent the booking details and cancellation link by email.</p>
+            <a class="button primary" href="/">Return to MisterClean</a>
+          </section>
+
+          <p class="booking-error" data-booking-error role="alert" hidden></p>
+          <div class="booking-actions" data-booking-actions>
+            <button class="button secondary" type="button" data-back hidden>Back</button>
+            <button class="button primary" type="button" data-next>Continue</button>
+          </div>
+        </form>
+      </section>
+    </main>
+    <script type="module" src="/booking/booking.js"></script>
+  </body>
+</html>

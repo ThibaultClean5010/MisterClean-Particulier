@@ -11,7 +11,7 @@ await rm(output, { recursive: true, force: true });
 await mkdir(resolve(output, "Images"), { recursive: true });
 await mkdir(resolve(output, "assets"), { recursive: true });
 
-for (const file of ["index.html", "script.js", "styles.css"]) {
+for (const file of ["index.html", "script.js", "styles.css", "robots.txt", "sitemap.xml"]) {
   await cp(resolve(root, file), resolve(output, file));
 }
 

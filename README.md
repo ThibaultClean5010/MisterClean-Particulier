@@ -213,8 +213,10 @@ Appliquer dans cet ordre :
 8. `008_fix_opening_hours_replace.sql` — remplacement des horaires compatible avec la protection safe-update Supabase ;
 9. `009_admin_booking_cancellation.sql` — annulation transactionnelle d’un rendez-vous par le cleaner.
 10. `010_booking_service_quantities.sql` — quantités par prestation et fonctions de réservation associées.
+11. `011_customers.sql` — table `customers` pour les notes internes ; fonctions `search_customers` et `get_customer_bookings`.
+12. `012_customers_manual.sql` — colonnes `first_name / last_name / phone` dans `customers` ; `search_customers()` étendue aux contacts sans réservation.
 
-Les migrations `001` à `010` ont été appliquées au projet Supabase lié au moment de cette mise à jour.
+Les migrations `001` à `010` ont été appliquées au projet Supabase lié au moment de cette mise à jour. La migration `011` est à appliquer pour activer le mini-CRM.
 
 ## Anti-conflit et idempotence
 
@@ -409,6 +411,8 @@ Payload principal :
 - `GET /api/admin/bookings` — retourne les rendez-vous confirmés en cours ou à venir ;
 - `POST /api/admin/bookings` — crée manuellement une réservation après authentification ;
 - `POST /api/admin/bookings/cancel` — annule un rendez-vous et déclenche les notifications ;
+- `GET /api/admin/customers` — liste des clients avec stats (param `?q=`) ou historique d'un client (param `?email=`) ;
+- `PATCH /api/admin/customers` — crée ou met à jour les notes internes d'un client ;
 - `GET /api/admin/availability` — retourne horaires et exceptions ;
 - `PUT /api/admin/availability` — remplace la semaine ;
 - `POST /api/admin/availability` — crée ou remplace une exception ;
@@ -485,7 +489,13 @@ npx vercel@latest deploy --yes
 Dernière Preview créée lors de cette mise à jour :
 
 ```text
-https://mister-clean-particulier-9tyupuf64-thibault-clean5010.vercel.app
+https://mister-clean-particulier-1m8y1mqvn-thibault-clean5010.vercel.app
+```
+
+Version actuellement deployee en production :
+
+```text
+https://www.misterclean.com.au
 ```
 
 Cette URL peut être remplacée par une Preview ultérieure. La protection SSO des Previews a été désactivée pour permettre les tests externes des liens d’annulation et de connexion admin. Réévaluer ce choix avant une utilisation durable.
@@ -538,6 +548,35 @@ Une désactivation avec `active = false` libère la période.
 ### Avant un remplacement complet de Zenbooker
 
 Importer tous les rendez-vous futurs existants dans `schedule_blocks`. Sans cet import, Supabase ne peut pas connaître les occupations provenant de l’ancien système.
+
+## Mini-CRM clients
+
+La vue `Customers` est intégrée à `/admin` (section `#customers` dans la barre latérale).
+
+Fonctionnalités disponibles :
+
+- ajout manuel d'un contact (prospects, clients directs sans réservation en ligne) via le bouton « New contact » ;
+- recherche instantanée par nom, téléphone ou email (debounce 320 ms) ;
+- liste paginée à 100 entrées avec nombre de réservations, dernière prestation et prochain rendez-vous ;
+- boutons d'appel direct et d'email depuis chaque ligne ;
+- fiche client en dialog avec l'historique complet de toutes les réservations (statut, prix, adresse) ;
+- notes internes par client, stockées dans la table `customers` et éditables sans recharger la page.
+
+La table `customers` est indexée sur l'email normalisé. Elle ne contient que les notes ; les statistiques et l'historique sont calculés à la volée via les fonctions PostgreSQL `search_customers()` et `get_customer_bookings()` (migration `011`). Les nouvelles réservations y apparaissent automatiquement sans modification du parcours de réservation.
+
+### API
+
+- `GET /api/admin/customers` — liste des clients avec stats agrégées (param `?q=` pour la recherche) ;
+- `GET /api/admin/customers?email=...` — historique de réservation d'un client + notes ;
+- `PATCH /api/admin/customers` — crée ou met à jour les notes internes d'un client.
+
+Toutes ces routes exigent une session administrateur valide.
+
+### Migration
+
+`011_customers.sql` — table `customers`, fonctions `search_customers` et `get_customer_bookings`.
+
+Les dernieres mises a jour deja realisees incluent le favicon MisterClean sur les interfaces, la navigation Admin corrigee avec un defilement adapte aux en-tetes fixes sur ordinateur et mobile, ainsi que le centrage des pictogrammes `Today` et `Upcoming`.
 
 ## Limites connues
 

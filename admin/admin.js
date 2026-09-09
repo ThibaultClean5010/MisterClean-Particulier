@@ -497,6 +497,7 @@ function resetManualBooking() {
     renderManualServices();
   }
   manualSlotOptions.innerHTML = "<p>Select a service and date to see available times.</p>";
+  resetBookingCustomerAutocomplete();
 }
 
 async function openManualBooking() {
@@ -566,6 +567,117 @@ manualBookingForm.addEventListener("submit", async (event) => {
   } finally {
     createManualBookingButton.textContent = "Create booking";
   }
+});
+
+// ── Customer autocomplete inside "New booking" dialog ─────────────────────
+const bookingCustomerSearch = document.querySelector("[data-booking-customer-search]");
+const bookingCustomerResults = document.querySelector("[data-booking-customer-results]");
+const bookingCustomerClear = document.querySelector("[data-booking-customer-clear]");
+let bookingCustomerTimer;
+let bookingCustomerHasSelection = false;
+
+function closeBookingCustomerResults() {
+  bookingCustomerResults.hidden = true;
+  bookingCustomerResults.replaceChildren();
+  bookingCustomerSearch.setAttribute("aria-expanded", "false");
+}
+
+function resetBookingCustomerAutocomplete() {
+  bookingCustomerSearch.value = "";
+  bookingCustomerClear.hidden = true;
+  bookingCustomerHasSelection = false;
+  closeBookingCustomerResults();
+}
+
+function applyCustomerToBookingForm(customer) {
+  manualField("firstName").value = customer.first_name;
+  manualField("lastName").value = customer.last_name;
+  manualField("email").value = customer.email;
+  manualField("phone").value = customer.phone;
+  bookingCustomerSearch.value = `${customer.first_name} ${customer.last_name}`;
+  bookingCustomerHasSelection = true;
+  bookingCustomerClear.hidden = false;
+  closeBookingCustomerResults();
+  // Move focus to the address field so the cleaner continues naturally.
+  manualField("addressLine1")?.focus();
+}
+
+async function searchBookingCustomers(q) {
+  if (q.length < 2) { closeBookingCustomerResults(); return; }
+  try {
+    const { customers } = await api(`/api/admin/customers?q=${encodeURIComponent(q)}`);
+    bookingCustomerResults.replaceChildren();
+    if (!customers.length) { closeBookingCustomerResults(); return; }
+    for (const customer of customers.slice(0, 7)) {
+      const item = document.createElement("li");
+      item.className = "booking-customer-result";
+      item.setAttribute("role", "option");
+      item.setAttribute("tabindex", "-1");
+      const nameEl = document.createElement("strong");
+      nameEl.textContent = `${customer.first_name} ${customer.last_name}`;
+      const detailEl = document.createElement("span");
+      const bookingLabel = customer.confirmed_bookings > 0
+        ? `${customer.confirmed_bookings} booking${customer.confirmed_bookings === 1 ? "" : "s"}`
+        : "No bookings yet";
+      detailEl.textContent = `${customer.email} · ${customer.phone} · ${bookingLabel}`;
+      item.append(nameEl, detailEl);
+      // mousedown fires before blur, so we can preventDefault to keep the input focused.
+      item.addEventListener("mousedown", (e) => { e.preventDefault(); applyCustomerToBookingForm(customer); });
+      item.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyCustomerToBookingForm(customer); }
+        if (e.key === "Escape") { closeBookingCustomerResults(); bookingCustomerSearch.focus(); }
+        if (e.key === "ArrowDown") { e.preventDefault(); (item.nextElementSibling ?? item).focus(); }
+        if (e.key === "ArrowUp") {
+          e.preventDefault();
+          const prev = item.previousElementSibling;
+          (prev ?? bookingCustomerSearch).focus();
+        }
+      });
+      bookingCustomerResults.append(item);
+    }
+    bookingCustomerResults.hidden = false;
+    bookingCustomerSearch.setAttribute("aria-expanded", "true");
+  } catch {
+    closeBookingCustomerResults();
+  }
+}
+
+bookingCustomerSearch.addEventListener("input", () => {
+  if (bookingCustomerHasSelection) {
+    // User started typing again after a selection — clear the filled fields.
+    manualField("firstName").value = "";
+    manualField("lastName").value = "";
+    manualField("email").value = "";
+    manualField("phone").value = "";
+    bookingCustomerHasSelection = false;
+    bookingCustomerClear.hidden = true;
+  }
+  clearTimeout(bookingCustomerTimer);
+  const q = bookingCustomerSearch.value.trim();
+  bookingCustomerTimer = setTimeout(() => searchBookingCustomers(q), 250);
+});
+
+bookingCustomerSearch.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { closeBookingCustomerResults(); return; }
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    const first = bookingCustomerResults.querySelector("[role='option']");
+    first?.focus();
+  }
+});
+
+bookingCustomerSearch.addEventListener("blur", () => {
+  // Small delay lets the mousedown on a result fire first.
+  setTimeout(closeBookingCustomerResults, 180);
+});
+
+bookingCustomerClear.addEventListener("click", () => {
+  manualField("firstName").value = "";
+  manualField("lastName").value = "";
+  manualField("email").value = "";
+  manualField("phone").value = "";
+  resetBookingCustomerAutocomplete();
+  bookingCustomerSearch.focus();
 });
 
 document.querySelector("[data-open-manual-booking]").addEventListener("click", openManualBooking);
@@ -643,10 +755,15 @@ document.querySelector("[data-calendar-today]").addEventListener("click", () => 
   renderAppointmentCalendar(latestBookings);
 });
 function navigateToAdminSection(hash, { behavior = "smooth", updateHistory = true } = {}) {
-  const sectionHash = ["#dashboard-overview", "#schedule", "#availability"].includes(hash) ? hash : "#dashboard-overview";
+  const sectionHash = ["#dashboard-overview", "#schedule", "#availability", "#customers"].includes(hash) ? hash : "#dashboard-overview";
   const target = document.querySelector(sectionHash);
   if (!target || dashboard.hidden) return;
-  target.scrollIntoView({ behavior, block: "start" });
+  const topbarHeight = document.querySelector(".admin-topbar")?.getBoundingClientRect().height ?? 0;
+  const mobileNavigationHeight = window.matchMedia("(max-width: 760px)").matches
+    ? document.querySelector(".admin-sidebar")?.getBoundingClientRect().height ?? 0
+    : 0;
+  const top = target.getBoundingClientRect().top + window.scrollY - topbarHeight - mobileNavigationHeight - 20;
+  window.scrollTo({ top: Math.max(0, top), behavior });
   document.querySelectorAll('.admin-nav a[href^="#"]').forEach((item) => {
     item.classList.toggle("is-active", item.getAttribute("href") === sectionHash);
   });
@@ -686,6 +803,291 @@ async function init() {
       authError.textContent = "The administration area is temporarily unavailable.";
     }
   }
+}
+
+// ── Customers ─────────────────────────────────────────────────────────────
+const customerSearch = document.querySelector("[data-customer-search]");
+const customerList = document.querySelector("[data-customer-list]");
+const customerStatus = document.querySelector("[data-customer-status]");
+const customerDialog = document.querySelector("[data-customer-dialog]");
+const customerDialogName = document.querySelector("[data-customer-dialog-name]");
+const customerContactBar = document.querySelector("[data-customer-contact-bar]");
+const customerNotesInput = document.querySelector("[data-customer-notes]");
+const customerNotesMessage = document.querySelector("[data-customer-notes-message]");
+const customerBookingsContainer = document.querySelector("[data-customer-bookings]");
+let customerSearchTimer;
+let activeCustomerEmail = null;
+let customersLoaded = false;
+
+function formatCustomerDate(value) {
+  if (!value) return null;
+  return new Intl.DateTimeFormat("en-AU", {
+    timeZone: "Australia/Adelaide", day: "numeric", month: "short", year: "numeric",
+  }).format(new Date(value));
+}
+
+function renderCustomers(customers) {
+  customerList.replaceChildren();
+  if (!customers.length) {
+    const empty = document.createElement("p");
+    empty.className = "customer-empty";
+    empty.textContent = "No customers found.";
+    customerList.append(empty);
+    return;
+  }
+  for (const customer of customers) {
+    const row = document.createElement("div");
+    row.className = "customer-item";
+    row.setAttribute("role", "button");
+    row.setAttribute("tabindex", "0");
+
+    const identity = document.createElement("div");
+    identity.className = "customer-identity";
+    const name = document.createElement("strong");
+    name.textContent = `${customer.first_name} ${customer.last_name}`;
+    const emailEl = document.createElement("span");
+    emailEl.textContent = customer.email;
+    identity.append(name, emailEl);
+
+    const contacts = document.createElement("div");
+    contacts.className = "customer-contacts";
+    const callLink = document.createElement("a");
+    callLink.href = `tel:${customer.phone}`;
+    callLink.className = "customer-contact-link";
+    callLink.textContent = customer.phone;
+    callLink.addEventListener("click", (e) => e.stopPropagation());
+    contacts.append(callLink);
+
+    const stats = document.createElement("div");
+    stats.className = "customer-stats";
+    const bookingCount = document.createElement("span");
+    bookingCount.className = "customer-stat";
+    bookingCount.textContent = `${customer.confirmed_bookings} booking${customer.confirmed_bookings === 1 ? "" : "s"}`;
+
+    const lastEl = document.createElement("span");
+    lastEl.className = "customer-stat";
+    lastEl.textContent = customer.last_service_at ? `Last: ${formatCustomerDate(customer.last_service_at)}` : "No past visits";
+
+    const nextEl = document.createElement("span");
+    nextEl.className = `customer-stat${customer.next_booking_at ? " is-upcoming" : ""}`;
+    nextEl.textContent = customer.next_booking_at ? `Next: ${formatCustomerDate(customer.next_booking_at)}` : "";
+
+    stats.append(bookingCount, lastEl);
+    if (customer.next_booking_at) stats.append(nextEl);
+
+    if (customer.notes) {
+      const notesDot = document.createElement("span");
+      notesDot.className = "customer-has-notes";
+      notesDot.title = "Has internal notes";
+      notesDot.setAttribute("aria-label", "Has internal notes");
+      identity.append(notesDot);
+    }
+
+    row.append(identity, contacts, stats);
+    row.addEventListener("click", () => openCustomerDialog(customer));
+    row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCustomerDialog(customer); } });
+    customerList.append(row);
+  }
+}
+
+async function loadCustomers(q = "") {
+  customerStatus.textContent = "Loading customers…";
+  customerStatus.classList.remove("is-error");
+  try {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    const { customers } = await api(`/api/admin/customers?${params}`);
+    renderCustomers(customers);
+    customerStatus.textContent = customers.length ? `${customers.length} customer${customers.length === 1 ? "" : "s"} found` : "";
+    customersLoaded = true;
+  } catch (error) {
+    if (error.status === 401) return location.reload();
+    customerStatus.textContent = "Customers could not be loaded. Please try again.";
+    customerStatus.classList.add("is-error");
+  }
+}
+
+function renderCustomerBookings(bookings) {
+  customerBookingsContainer.replaceChildren();
+  if (!bookings.length) {
+    const empty = document.createElement("p");
+    empty.className = "customer-empty";
+    empty.textContent = "No bookings found for this customer.";
+    customerBookingsContainer.append(empty);
+    return;
+  }
+  for (const booking of bookings) {
+    const item = document.createElement("div");
+    item.className = `customer-booking-item${booking.status === "cancelled" ? " is-cancelled" : ""}`;
+
+    const header = document.createElement("div");
+    header.className = "customer-booking-header";
+    const dateEl = document.createElement("strong");
+    dateEl.textContent = `${formatCustomerDate(booking.starts_at)} · ${appointmentTime(booking.starts_at)}`;
+    const statusBadge = document.createElement("span");
+    statusBadge.className = `customer-booking-status is-${booking.status}`;
+    statusBadge.textContent = booking.status;
+    header.append(dateEl, statusBadge);
+
+    const serviceEl = document.createElement("p");
+    serviceEl.className = "customer-booking-service";
+    const priceText = booking.price_cents ? ` · $${(booking.price_cents / 100).toFixed(0)}` : (booking.price_label ? ` · ${booking.price_label}` : "");
+    serviceEl.textContent = `${booking.service_name} · ${booking.duration_minutes} min${priceText}`;
+
+    const addressParts = [booking.address_line1, booking.address_line2, booking.suburb].filter(Boolean);
+    const addressEl = document.createElement("p");
+    addressEl.className = "customer-booking-address";
+    addressEl.textContent = addressParts.join(", ");
+
+    const ref = document.createElement("span");
+    ref.className = "appointment-reference";
+    ref.textContent = booking.reference;
+
+    item.append(header, serviceEl, addressEl, ref);
+    if (booking.notes) {
+      const notesEl = document.createElement("p");
+      notesEl.className = "customer-booking-notes";
+      notesEl.textContent = `Notes: ${booking.notes}`;
+      item.append(notesEl);
+    }
+    customerBookingsContainer.append(item);
+  }
+}
+
+async function openCustomerDialog(customer) {
+  activeCustomerEmail = customer.email;
+  customerDialogName.textContent = `${customer.first_name} ${customer.last_name}`;
+  customerNotesInput.value = customer.notes ?? "";
+  customerNotesMessage.textContent = "";
+  customerBookingsContainer.innerHTML = "<p>Loading history…</p>";
+
+  customerContactBar.replaceChildren();
+  const callLink = document.createElement("a");
+  callLink.href = `tel:${customer.phone}`;
+  callLink.className = "button secondary";
+  callLink.textContent = `Call ${customer.phone}`;
+  const emailLink = document.createElement("a");
+  emailLink.href = `mailto:${customer.email}`;
+  emailLink.className = "button secondary";
+  emailLink.textContent = `Email ${customer.email}`;
+  customerContactBar.append(callLink, emailLink);
+
+  customerDialog.showModal();
+
+  try {
+    const { bookings, notes } = await api(`/api/admin/customers?email=${encodeURIComponent(customer.email)}`);
+    if (activeCustomerEmail !== customer.email) return;
+    customerNotesInput.value = notes ?? "";
+    renderCustomerBookings(bookings);
+  } catch (error) {
+    if (error.status === 401) return location.reload();
+    customerBookingsContainer.innerHTML = "<p>Booking history could not be loaded.</p>";
+  }
+}
+
+function closeCustomerDialog() {
+  customerDialog.close();
+  activeCustomerEmail = null;
+}
+
+document.querySelector("[data-close-customer-dialog]").addEventListener("click", closeCustomerDialog);
+customerDialog.addEventListener("click", (e) => { if (e.target === customerDialog) closeCustomerDialog(); });
+
+document.querySelector("[data-save-customer-notes]").addEventListener("click", async () => {
+  if (!activeCustomerEmail) return;
+  const saveButton = document.querySelector("[data-save-customer-notes]");
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving…";
+  customerNotesMessage.textContent = "";
+  customerNotesMessage.classList.remove("is-error");
+  try {
+    await api("/api/admin/customers", {
+      method: "PATCH",
+      body: JSON.stringify({ email: activeCustomerEmail, notes: customerNotesInput.value }),
+    });
+    customerNotesMessage.textContent = "Notes saved.";
+    // Refresh list silently so notes dot updates
+    loadCustomers(customerSearch.value.trim());
+  } catch (error) {
+    if (error.status === 401) return location.reload();
+    customerNotesMessage.textContent = "Could not save notes. Please try again.";
+    customerNotesMessage.classList.add("is-error");
+  } finally {
+    saveButton.disabled = false;
+    saveButton.textContent = "Save notes";
+  }
+});
+
+// ── Add contact dialog ────────────────────────────────────────────────────
+const addCustomerDialog = document.querySelector("[data-add-customer-dialog]");
+const addCustomerForm = document.querySelector("[data-add-customer-form]");
+const addCustomerMessage = document.querySelector("[data-add-customer-message]");
+const addCustomerSubmit = document.querySelector("[data-add-customer-submit]");
+
+function openAddCustomerDialog() {
+  addCustomerForm.reset();
+  addCustomerMessage.textContent = "";
+  addCustomerMessage.classList.remove("is-error");
+  addCustomerSubmit.disabled = false;
+  addCustomerSubmit.textContent = "Add contact";
+  addCustomerDialog.showModal();
+}
+
+function closeAddCustomerDialog() {
+  addCustomerDialog.close();
+}
+
+document.querySelector("[data-open-add-customer]").addEventListener("click", openAddCustomerDialog);
+document.querySelectorAll("[data-close-add-customer]").forEach((btn) => btn.addEventListener("click", closeAddCustomerDialog));
+addCustomerDialog.addEventListener("click", (e) => { if (e.target === addCustomerDialog) closeAddCustomerDialog(); });
+
+addCustomerForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!addCustomerForm.reportValidity()) return;
+  addCustomerSubmit.disabled = true;
+  addCustomerSubmit.textContent = "Saving…";
+  addCustomerMessage.textContent = "";
+  addCustomerMessage.classList.remove("is-error");
+  try {
+    await api("/api/admin/customers", {
+      method: "POST",
+      body: JSON.stringify({
+        email:     addCustomerForm.elements.namedItem("email").value,
+        firstName: addCustomerForm.elements.namedItem("firstName").value,
+        lastName:  addCustomerForm.elements.namedItem("lastName").value,
+        phone:     addCustomerForm.elements.namedItem("phone").value,
+        notes:     addCustomerForm.elements.namedItem("notes").value,
+      }),
+    });
+    closeAddCustomerDialog();
+    await loadCustomers(customerSearch.value.trim());
+  } catch (error) {
+    if (error.status === 401) return location.reload();
+    const message = error.status === 409
+      ? "This contact is already in the directory."
+      : "The contact could not be saved. Please try again.";
+    addCustomerMessage.textContent = message;
+    addCustomerMessage.classList.add("is-error");
+    addCustomerSubmit.disabled = false;
+    addCustomerSubmit.textContent = "Add contact";
+  }
+});
+
+customerSearch.addEventListener("input", () => {
+  clearTimeout(customerSearchTimer);
+  customerSearchTimer = setTimeout(() => loadCustomers(customerSearch.value.trim()), 320);
+});
+
+// Load customers lazily when the section first becomes visible via IntersectionObserver.
+const customersSection = document.getElementById("customers");
+if (customersSection) {
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !customersLoaded) {
+      loadCustomers();
+      observer.disconnect();
+    }
+  }, { threshold: 0.05 });
+  observer.observe(customersSection);
 }
 
 init();

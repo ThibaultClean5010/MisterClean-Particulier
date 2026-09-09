@@ -9,6 +9,9 @@
       "regions": ["syd1"]
     }
   },
+  "rewrites": [
+    { "source": "/api/admin/auth/logout", "destination": "/api/admin/auth/session" }
+  ],
   "crons": [
     {
       "path": "/api/cron/send-booking-emails",

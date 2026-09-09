@@ -208,6 +208,26 @@ textarea { min-height: 132px; resize: vertical; }
 .form-status.is-error { color: #a62e24; }
 .form-honeypot { display: none; }
 
+/* FAQ */
+.faq-section { padding: clamp(64px, 8vw, 116px) clamp(20px, 5vw, 72px); background: var(--surface-alt); border-bottom: 7px solid var(--green); }
+.faq-inner { max-width: 900px; }
+.faq-heading { margin-bottom: clamp(34px, 5vw, 56px); padding-bottom: 24px; border-bottom: 2px solid var(--blue-dark); }
+.faq-heading h2 { margin-bottom: 12px; }
+.faq-heading > p:last-child { margin: 0; color: var(--muted); font-size: 1.04rem; }
+.faq-list { display: grid; gap: 0; border: 1px solid var(--line-strong); }
+.faq-item { border-bottom: 1px solid var(--line-strong); }
+.faq-item:last-child { border-bottom: 0; }
+.faq-question { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 26px; color: var(--ink); background: #fff; cursor: pointer; font-size: 1.02rem; font-weight: 700; list-style: none; transition: background-color 130ms ease, color 130ms ease; }
+.faq-question::-webkit-details-marker { display: none; }
+.faq-question::after { flex: 0 0 auto; width: 28px; height: 28px; content: "+"; display: grid; place-items: center; color: var(--blue-deep); background: var(--blue-soft); border-radius: 50%; font-size: 1.3rem; font-weight: 400; line-height: 1; transition: transform 220ms ease, background-color 130ms ease; }
+.faq-item[open] > .faq-question { color: var(--blue-deep); background: var(--blue-soft); border-left: 5px solid var(--green); padding-left: 21px; }
+.faq-item[open] > .faq-question::after { background: var(--green); transform: rotate(45deg); }
+.faq-question:hover { background: var(--blue-soft); color: var(--blue-deep); }
+.faq-answer { padding: 0 26px 24px; background: var(--blue-soft); border-left: 5px solid var(--green); }
+.faq-answer p { margin: 0; color: var(--ink-soft); font-size: 0.97rem; line-height: 1.68; }
+.faq-cta { display: inline-flex; margin-top: 14px; color: var(--blue-deep); font-size: .9rem; font-weight: 700; text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 2px; text-underline-offset: 4px; transition: color 130ms ease; }
+.faq-cta:hover { color: var(--blue); }
+
 .site-footer { padding: clamp(56px, 7vw, 92px) clamp(20px, 5vw, 72px) 28px; color: #e3f6ff; background: var(--ink); }
 .footer-main { display: grid; grid-template-columns: minmax(220px, 1.05fr) repeat(3, minmax(170px, 1fr)); gap: clamp(32px, 5vw, 84px); max-width: 1440px; margin: 0 auto; }
 .footer-intro { max-width: 290px; }
@@ -270,7 +290,9 @@ textarea { min-height: 132px; resize: vertical; }
   .hero-actions { gap: 8px; margin-top: 13px; }
   .hero-actions .button { min-height: 42px; font-size: .78rem; }
   .hero-stats { margin-top: 12px; }
-  .intro-section, .owner-story, .offers, .size-guide, .process, .reviews, .service-area, .contact-section { padding: 58px 16px; }
+  .intro-section, .owner-story, .offers, .size-guide, .process, .reviews, .service-area, .faq-section, .contact-section { padding: 58px 16px; }
+  .faq-question { padding: 18px 16px; font-size: .95rem; }
+  .faq-answer { padding: 0 16px 18px; }
   .service-strip, .intro-grid, .guide-grid, .process-steps, .price-grid, .price-grid.three, .form-row { grid-template-columns: 1fr; }
   .service-strip a { min-height: 64px; border-right: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.28); }
   .outdoor-media { min-height: 0; }

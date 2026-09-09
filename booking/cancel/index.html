@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Cancel a booking | MisterClean</title>
+    <link rel="icon" type="image/webp" href="/Images/logo.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/booking/booking.css">
+  </head>
+  <body class="booking-page">
+    <header class="booking-header"><a href="/"><img src="/Images/logo.webp" alt="MisterClean Services"></a><a href="tel:+61474597325">0474 597 325</a></header>
+    <main class="booking-shell">
+      <div class="booking-intro"><p class="eyebrow">Your booking</p><h1>Cancellation.</h1><p>If you are within the cancellation window, your appointment will be released immediately.</p></div>
+      <section class="booking-panel">
+        <p class="eyebrow">Booking cancellation</p>
+        <h2 data-cancel-title>Cancel this booking?</h2>
+        <p data-cancel-copy>This action cannot be undone online. If you need to reschedule, cancel here and make a new booking.</p>
+        <p class="booking-error" data-cancel-error role="alert" hidden></p>
+        <div class="booking-actions">
+          <a class="button secondary" href="/">Keep booking</a>
+          <button class="button primary" type="button" data-cancel-button>Confirm cancellation</button>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/booking/cancel/cancel.js"></script>
+  </body>
+</html>

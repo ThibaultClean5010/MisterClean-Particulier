@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /booking/cancel
+
+Allow: /booking
+Allow: /
+
+Sitemap: https://www.misterclean.com.au/sitemap.xml

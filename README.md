@@ -76,7 +76,8 @@ Elle contient notamment :
 - un hero avec un carrousel automatique de résultats avant/après ;
 - une section personnelle présentant l’approche locale et pratique de MisterClean ;
 - les services et tarifs ;
-- deux séries avant/après de nettoyage de sofa affichées dès le premier écran ;
+- une photo de présentation du cleaner en première position, puis cinq comparaisons avant/après (onze photos au total) dans le carrousel d’accueil, avec flèches, pause, navigation au clavier et balayage tactile ;
+- une galerie de trois comparaisons près des tarifs sofa (`#before-after`), avec agrandissement des photos au clic ;
 - un guide des tailles ;
 - les avis Google via Elfsight ;
 - une carte Leaflet centrée sur Adelaide ;
@@ -85,6 +86,20 @@ Elle contient notamment :
 La carte affiche un cercle indicatif de `17 500` mètres autour d’Adelaide. Ce cercle est uniquement visuel : il ne constitue pas une validation géographique dans l’API. Le texte public mentionne seulement « Adelaide and surrounding areas » et ne maintient plus de liste exhaustive de quartiers.
 
 Les fichiers réellement envoyés à Vercel sont explicitement sélectionnés dans `.vercelignore` et dans `scripts/build-static.mjs`. Toute nouvelle image référencée dans le HTML ou le booking doit être ajoutée aux deux listes.
+
+Les images du carrousel et de la galerie utilisent des copies WebP de 600 et 1200 pixels de large (qualité 84), avec le cadrage complet et les couleurs des photos fournies. Les originaux sont conservés dans `Images/`. Le carrousel charge une taille adaptée à l’écran et prépare la photo suivante ; les photos de la galerie sont chargées à l’approche de la section. L’animation s’arrête hors écran, pendant une interaction et quand la réduction des animations est demandée ; le bouton Play permet une reprise explicite.
+
+Correspondance des copies `*-600.webp` / `*-1200.webp` avec les originaux :
+
+La photo de présentation `Images/thibault-cleaning.jpg` provient du fichier fourni `thibo.jpg`. Son affichage est recadré en CSS sur le cleaner, centré dans la diapositive, pour masquer l’interface et les bords de l’écran présents dans la source. Le fichier photo lui-même est conservé tel quel.
+
+| Préfixe | Avant | Après |
+|---|---|---|
+| `light-sofa` | `Sofa dirty1_2.jpg` | `Sofa clean 08.jpg` |
+| `grey-sofa` | `dirty sofa alex 1_2.jpg` | `Sofa Alex lean.png` |
+| `four-seat-sofa` | `Couch 4 places dirty .jpg` | `Couch 4 places clean.jpg` |
+| `grey-chaise` | `dirty sofa 2_2.jpg` | `Sofa alex clean.png` |
+| `sofa-stains` | `Couch 4 places sales.jpg` | `1000014781.jpg` |
 
 ## Parcours de réservation
 

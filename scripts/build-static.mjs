@@ -21,6 +21,7 @@ await cp(resolve(root, "assets", "outdoor-pressure-cleaning.png"), resolve(outpu
 
 for (const file of [
   "logo.webp",
+  "thibault-cleaning.jpg",
   "Sofa Alex lean.png",
   "Sofa up to 3 seats.png",
   "Sofa up to 4 seats.png",
@@ -37,6 +38,26 @@ for (const file of [
   "Matelas Single.png",
   "Matelas Queen.png",
   "Matelas King.png",
+  "light-sofa-before-600.webp",
+  "light-sofa-before-1200.webp",
+  "light-sofa-after-600.webp",
+  "light-sofa-after-1200.webp",
+  "grey-sofa-before-600.webp",
+  "grey-sofa-before-1200.webp",
+  "grey-sofa-after-600.webp",
+  "grey-sofa-after-1200.webp",
+  "four-seat-sofa-before-600.webp",
+  "four-seat-sofa-before-1200.webp",
+  "four-seat-sofa-after-600.webp",
+  "four-seat-sofa-after-1200.webp",
+  "grey-chaise-before-600.webp",
+  "grey-chaise-before-1200.webp",
+  "grey-chaise-after-600.webp",
+  "grey-chaise-after-1200.webp",
+  "sofa-stains-before-600.webp",
+  "sofa-stains-before-1200.webp",
+  "sofa-stains-after-600.webp",
+  "sofa-stains-after-1200.webp",
 ]) {
   await cp(resolve(root, "Images", file), resolve(output, "Images", file));
 }

@@ -8,6 +8,15 @@ const pages = ["index.html", "blog/index.html", "blog/fabric-sofa-care/index.htm
 const read = (file: string) => readFileSync(resolve(root, file), "utf8");
 
 describe("Static blog", () => {
+  it("links each public header to MisterClean B2B without replacing the booking link", () => {
+    for (const page of pages) {
+      const header = read(page).match(/<header class="site-header">([\s\S]*?)<\/header>/)?.[1] ?? "";
+      expect(header).toContain('class="header-b2b" href="https://www.mistercleanb2b.com/"');
+      expect(header).toMatch(/class="header-b2b"[^>]*target="_blank"[^>]*rel="noopener noreferrer"/);
+      expect(header).toContain('class="header-cta" href="/booking"');
+    }
+  });
+
   it("keeps all local blog links, section anchors and assets resolvable", () => {
     for (const page of pages) {
       const html = read(page);

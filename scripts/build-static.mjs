@@ -1,5 +1,6 @@
 import { cp, mkdir, rm } from "node:fs/promises";
 import { resolve } from "node:path";
+import { bookingServiceSlugs } from "../booking/service-links.js";
 
 const root = process.cwd();
 const output = resolve(root, "dist");
@@ -11,11 +12,17 @@ await rm(output, { recursive: true, force: true });
 await mkdir(resolve(output, "Images"), { recursive: true });
 await mkdir(resolve(output, "assets"), { recursive: true });
 
-for (const file of ["index.html", "script.js", "styles.css", "robots.txt", "sitemap.xml"]) {
+for (const file of ["index.html", "script.js", "share.js", "styles.css", "robots.txt", "sitemap.xml", "apple-touch-icon.png"]) {
   await cp(resolve(root, file), resolve(output, file));
 }
 
 await cp(resolve(root, "booking"), resolve(output, "booking"), { recursive: true });
+// Real static entry points: no catch-all rewrite, no query parameters, and a
+// shared /booking canonical. Unknown routes and cancellation retain their behavior.
+for (const slug of bookingServiceSlugs) {
+  await mkdir(resolve(output, "booking", slug), { recursive: true });
+  await cp(resolve(root, "booking", "index.html"), resolve(output, "booking", slug, "index.html"));
+}
 await cp(resolve(root, "blog"), resolve(output, "blog"), { recursive: true });
 await cp(resolve(root, "admin"), resolve(output, "admin"), { recursive: true });
 await cp(resolve(root, "assets", "outdoor-pressure-cleaning.png"), resolve(output, "assets", "outdoor-pressure-cleaning.png"));

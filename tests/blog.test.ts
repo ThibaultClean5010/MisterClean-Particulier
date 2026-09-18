@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { requestedServiceSlug } from "../booking/service-links.js";
 
 const root = process.cwd();
 const pages = ["index.html", "blog/index.html", "blog/fabric-sofa-care/index.html"];
@@ -19,6 +20,7 @@ describe("Static blog", () => {
         const [pathAndQuery, anchor] = link.split("#");
         const path = decodeURIComponent(pathAndQuery.split("?")[0]);
         let target = path ? resolve(root, path.startsWith("/") ? path.slice(1) : `${dirname(page)}/${path}`) : resolve(root, page);
+        if (requestedServiceSlug(new URL(path || "/", "https://www.misterclean.com.au"))) target = resolve(root, "booking/index.html");
         if (!/\.[a-z0-9]+$/i.test(target)) target = resolve(target, "index.html");
         expect(existsSync(target), `${page}: ${link}`).toBe(true);
         if (anchor) expect(readFileSync(target, "utf8"), `${page}: ${link}`).toContain(`id="${anchor}"`);
@@ -38,7 +40,7 @@ describe("Static blog", () => {
       const schema = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1];
       expect(schema).toBeTruthy();
       expect(JSON.parse(schema!).inLanguage).toBe("en-AU");
-      expect(html).toContain('href="/blog/"');
+      expect(html).toContain('href="/blog"');
     }
     expect(read("blog/fabric-sofa-care/index.html")).toContain('id="care-label"');
     expect(read("blog/fabric-sofa-care/index.html")).toContain('id="professional-help"');
@@ -50,7 +52,7 @@ describe("Static blog", () => {
     expect([...html.matchAll(/class="result-card"/g)]).toHaveLength(3);
     expect(html).toContain('class="carousel-slide carousel-slide--intro"');
     expect(html).not.toContain("carpeted-room");
-    expect(html).toContain('href="/blog/"');
+    expect(html).toContain('href="/blog"');
     expect(read("scripts/build-static.mjs")).toContain('resolve(root, "blog")');
   });
 });

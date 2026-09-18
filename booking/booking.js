@@ -1,4 +1,5 @@
 import { money, selectionTotals, servicePayload, serviceBreakdown, createAddonOptions, syncAddonOptions } from "./service-addons.js";
+import { requestedServiceSlug } from "./service-links.js";
 
 const form = document.querySelector("#booking-form");
 const steps = [...document.querySelectorAll("[data-step]")];
@@ -141,7 +142,7 @@ function renderServices() {
     card.append(imageDiv, body, quantityLabel, extras);
     serviceOptions.append(card);
   }
-  const requestedSlug = new URLSearchParams(location.search).get("service");
+  const requestedSlug = requestedServiceSlug(new URL(location.href));
   const requestedService = state.config.services.find((service) => service.slug === requestedSlug);
   if (requestedService) setServiceQuantity(requestedService, 1);
 }

@@ -49,7 +49,19 @@ beforeEach(() => {
   }));
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
 });
-afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); document.body.replaceChildren(); });
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); document.body.replaceChildren(); window.history.replaceState({}, "", "/"); });
+
+describe("service link preselection", () => {
+  it.each(["/booking/sofa-up-to-3-seats", "/booking?service=sofa-up-to-3-seats"])("preselects the service while leaving paid extras unchecked: %s", async path => {
+    window.history.replaceState({}, "", path);
+    await loadMarkup("booking/index.html");
+    await import("../booking/booking.js");
+    await vi.waitFor(() => expect(find(".service-option select")?.value).toBe("1"));
+    expect(find('input[value="steam-cleaning"]').checked).toBe(false);
+    expect(find("[data-service-selection]").textContent).toContain("75 min · $110");
+    expect(requests.some(request => request.method === "POST")).toBe(false);
+  });
+});
 
 describe("customer addon selection", () => {
   beforeEach(async () => {

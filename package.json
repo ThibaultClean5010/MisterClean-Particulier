@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-static.mjs",
+    "seo:audit": "node scripts/audit-seo.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude **/.vercel/** --exclude **/dist/**"
   },

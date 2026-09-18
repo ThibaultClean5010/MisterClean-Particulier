@@ -6,6 +6,10 @@ const cleanText = (min: number, max: number) => z.string().trim().min(min).max(m
 const serviceSelectionSchema = z.object({
   serviceId: z.uuid(),
   quantity: z.coerce.number().int().min(1).max(10),
+  addons: z.array(z.enum(["steam-cleaning", "hair-fur-removal"]))
+    .max(2)
+    .refine((addons) => new Set(addons).size === addons.length)
+    .default([]),
 });
 
 const serviceSelectionsSchema = z.array(serviceSelectionSchema)
@@ -41,6 +45,10 @@ export const bookingSchema = z.object({
 });
 
 export type BookingInput = z.infer<typeof bookingSchema>;
+
+export function toRpcServices(services: BookingInput["services"]) {
+  return services.map(({ serviceId, quantity, addons }) => ({ service_id: serviceId, quantity, addons }));
+}
 
 export const cancellationSchema = z.object({ token: z.string().min(32).max(200) });
 

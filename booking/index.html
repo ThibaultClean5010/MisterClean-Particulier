@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/booking/booking.css">
+    <link rel="stylesheet" href="/booking/service-addons.css">
   </head>
   <body class="booking-page">
     <header class="booking-header">
@@ -36,7 +37,7 @@
           <section class="booking-step is-active" data-step="1">
             <p class="eyebrow">Step 1</p>
             <h2 id="booking-title">Choose your services</h2>
-            <p class="service-help">Select every service you would like us to complete during this visit.</p>
+            <p class="service-help">Choose your services and quantities, then add optional Steam cleaning or Hair and fur removal. Extras are charged per item. All prices are in AUD.</p>
             <div class="service-options" data-service-options aria-live="polite">
               <p>Loading services…</p>
             </div>
@@ -98,6 +99,7 @@
             <p class="eyebrow">Booking confirmed</p>
             <h2>You're all booked.</h2>
             <p>Your reference is <strong data-booking-reference></strong>.</p>
+            <p data-confirmed-total></p>
             <p>We have sent the booking details and cancellation link by email.</p>
             <a class="button primary" href="/">Return to MisterClean</a>
           </section>

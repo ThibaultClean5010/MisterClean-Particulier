@@ -101,6 +101,16 @@ La photo de présentation `Images/thibault-cleaning.jpg` provient du fichier fou
 | `grey-chaise` | `dirty sofa 2_2.jpg` | `Sofa alex clean.png` |
 | `sofa-stains` | `Couch 4 places sales.jpg` | `1000014781.jpg` |
 
+## Blog en anglais
+
+Le blog est disponible sur `/blog`, avec un lien dans le menu, le pied de page et un aperçu sur l’accueil. Le premier article, `/blog/fabric-sofa-care`, porte sur l’entretien des canapés en tissu entre les nettoyages professionnels. Il est écrit en anglais australien et utilise une photo déjà fournie, sans modifier le carrousel.
+
+Les pages statiques sont dans `blog/` et les styles partagés dans `blog/blog.css`. `scripts/build-static.mjs` copie le dossier complet dans `dist/blog/`. Aucun service tiers, compte administrateur ou bibliothèque supplémentaire n’est nécessaire pour afficher les articles ; ils restent lisibles sans JavaScript. Le script global existant gère seulement les menus sur ces pages.
+
+Pour ajouter un article : créer `blog/<slug>/index.html` en reprenant la structure du premier article ; écrire un contenu original en anglais australien ; vérifier les conseils auprès de sources fiables et citer les liens ; renseigner le titre, la description, la date réelle et l’URL canonique, ainsi que le balisage BlogPosting ; ajouter l’article à `blog/index.html`, à son balisage Blog et au sitemap ; actualiser l’aperçu de l’accueil si nécessaire. Préserver les articles précédents et ne pas inventer d’intervention client, de certification ni de résultat garanti. Pour les nouvelles images, utiliser les sources autorisées et actualiser les listes d’inclusion existantes.
+
+Sujets éditoriaux prévus : canapés et tissus, taches et petits accidents, moquettes et tapis, matelas et entretien de la maison. La création de cette rubrique n’active pas de rédaction mensuelle automatique et ne publie pas les changements sur GitHub. La programmation et la publication nécessitent une configuration séparée.
+
 ## Parcours de réservation
 
 Le parcours client comporte sept étapes :
@@ -592,6 +602,47 @@ Toutes ces routes exigent une session administrateur valide.
 `011_customers.sql` — table `customers`, fonctions `search_customers` et `get_customer_bookings`.
 
 Les dernieres mises a jour deja realisees incluent le favicon MisterClean sur les interfaces, la navigation Admin corrigee avec un defilement adapte aux en-tetes fixes sur ordinateur et mobile, ainsi que le centrage des pictogrammes `Today` et `Upcoming`.
+
+## Options de réservation (suppléments)
+
+Les parcours client et administrateur proposent deux options facultatives et décochées par défaut pour les 11 prestations réservables. Les prix ci-dessous sont des tarifs de départ, en AUD **par article**. Les prix de base restent inchangés. Le 14 septembre 2026, après avoir confirmé que Steam cleaning est une option payante, le propriétaire a demandé de fixer les suppléments selon le marché et la prestation. Ces montants sont une proposition commerciale adaptée à MisterClean, pas une moyenne statistique du marché ; la rentabilité reste à ajuster selon le temps réellement passé et les coûts.
+
+| Prestation | Steam cleaning | Hair and fur removal | Temps supplémentaire vapeur / poils |
+| --- | ---: | ---: | ---: |
+| Canapé jusqu’à 3 places | 30 $ | 25 $ | 15 / 20 min |
+| Canapé 4 places | 40 $ | 30 $ | 20 / 25 min |
+| Canapé 5 places et plus | 50 $ | 40 $ | 25 / 30 min |
+| Chaise de salle à manger | 10 $ | 10 $ | 10 / 10 min |
+| Fauteuil | 15 $ | 15 $ | 10 / 15 min |
+| Tapis | 15 $ | 15 $ | 10 / 15 min |
+| Moquette, pièce jusqu’à 15 m² | 20 $ | 20 $ | 10 / 15 min |
+| Moquette, salon de plus de 15 m² | 30 $ | 30 $ | 15 / 20 min |
+| Matelas Single | 15 $ | 10 $ | 10 / 10 min |
+| Matelas Queen | 20 $ | 15 $ | 15 / 15 min |
+| Matelas King | 25 $ | 20 $ | 15 / 15 min |
+
+Le 18 septembre 2026, le propriétaire a fixé les suppléments Steam cleaning des canapés à 30 / 40 / 50 $ pour jusqu’à 3 / 4 / 5 places et plus. Les autres suppléments, les prix de base et les durées sont inchangés.
+
+### Repères de prix consultés le 14 septembre 2026
+
+- [Steam Cleans SA, Adelaide](https://www.steamcleanssa.com/) affiche 150 / 180 / 200 $ pour des canapés 3 / 4 / 5 places, et 100 $ par pièce de moquette. Avec l’option vapeur et les suppléments révisés le 18 septembre, MisterClean revient respectivement à 140 / 175 / 220 $ et 109 $ pour une pièce jusqu’à 15 m². Ce sont des repères de prix complets, pas les tarifs d’un supplément identique.
+- [Bensons Cleaning, Adelaide](https://www.bensonscleaningadelaide.com.au/services/mattress-cleaning/) affiche des prestations Deluxe à partir de 130 / 200 / 215 $ pour Single / Queen / King. MisterClean avec vapeur revient à 114 / 160 / 195 $. Les contenus des forfaits diffèrent.
+- [Squeaky Clean Team, Melbourne](https://squeakycleanteam.com.au/blog/how-much-does-carpet-cleaning-cost-melbourne/) affiche 4,40 $/m² en standard et 6,60 $/m² en nettoyage renforcé : un repère secondaire de travail supplémentaire, pas un supplément vapeur directement comparable et pas un tarif d’Adelaide.
+- [Fleurieu Cleaning, Adelaide](https://fleurieucleaning.com.au/upholstery-cleaning-service/) exclut explicitement le retrait de fourrure de l’aspiration standard. Son prix n’est pas publié sur cette page : les suppléments poils de MisterClean restent notre estimation, modulée pour 10 à 30 minutes de brossage/aspiration supplémentaires par article, et non un tarif concurrent repris.
+
+La vapeur/extraction est incluse dans plusieurs offres concurrentes. Chez MisterClean, l’option est donc annoncée explicitement comme payante, et le texte du site n’annonce plus de vapeur incluse au prix de base. L’option doit correspondre à un travail réellement supplémentaire. Les traitements d’urine/odeurs ne sont pas assimilés au simple retrait de poils.
+
+Les options choisies s’appliquent à toute la quantité d’une prestation. Exemple : 2 canapés 3 places avec les deux options = 2 × (110 + 30 + 25) = 330 $, pour 220 minutes de prestation et un seul buffer de 30 minutes. Pour traiter différemment deux articles identiques, contacter MisterClean ; le formulaire ne répartit pas encore les options à l’intérieur d’une même ligne.
+
+Steam cleaning est un traitement supplémentaire soumis à la compatibilité du tissu, contrôlée sur place. Le supplément vapeur n’est pas facturé si le tissu est incompatible ; le règlement étant après la prestation, le montant est ajusté au moment de l’encaissement (pas de fonction de modification du prix d’une réservation dans l’admin). Hair and fur removal couvre le brossage et l’aspiration supplémentaires, pas le traitement de l’urine ou des odeurs. Les prestations sur devis restent sur devis.
+
+### Mise en service
+
+Appliquer `supabase/migrations/013_booking_service_addons.sql` après les migrations précédentes **avant** de déployer le nouveau code. Cette migration ajoute le catalogue `service_addons`, les instantanés `booking_services.addons` et remplace les fonctions de disponibilité/création avec quantités. Elle a été appliquée en production le 18 septembre 2026, dans une transaction, puis enregistrée sous la version `013` dans le registre Supabase. Les 22 options ont été créées et les réservations existantes ont été conservées. Ne pas relancer cette migration ni les anciennes migrations de seed sur la base existante.
+
+Le serveur reçoit uniquement les codes d’options ; PostgreSQL valide la disponibilité de chaque option pour chaque service et recalcule les prix/durées. Les instantanés gardent les options, leurs tarifs et durées : les confirmations, l’agenda et l’historique continuent d’afficher les choix même après un changement de catalogue. Les anciennes réservations restent inchangées. Modifier les lignes de `service_addons` pour ajuster les tarifs futurs ; aucun tarif n’est codé en dur dans le navigateur. Le schéma de prix est compatible avec les anciens clients qui n’envoient pas d’options.
+
+Les tests `booking-addons*` couvrent les parcours client/admin, la validation des API, les calculs, la disponibilité, la conservation des anciens rendez-vous et les instantanés d’options. PGlite exécute toutes les migrations dans un PostgreSQL éphémère en mémoire ; Happy DOM vérifie les interactions avec des réponses API simulées. Aucun email, rendez-vous réel ou connexion à Supabase n’est créé par ces tests.
 
 ## Limites connues
 

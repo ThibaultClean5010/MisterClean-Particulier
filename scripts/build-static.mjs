@@ -16,6 +16,7 @@ for (const file of ["index.html", "script.js", "styles.css", "robots.txt", "site
 }
 
 await cp(resolve(root, "booking"), resolve(output, "booking"), { recursive: true });
+await cp(resolve(root, "blog"), resolve(output, "blog"), { recursive: true });
 await cp(resolve(root, "admin"), resolve(output, "admin"), { recursive: true });
 await cp(resolve(root, "assets", "outdoor-pressure-cleaning.png"), resolve(output, "assets", "outdoor-pressure-cleaning.png"));
 

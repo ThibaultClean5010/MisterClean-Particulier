@@ -57,7 +57,7 @@ describe("manual admin booking", () => {
     const response = await handler.fetch(post(validBooking));
     expect(response.status).toBe(201);
     expect(mocks.createBooking).toHaveBeenCalledWith(expect.objectContaining({
-      services: validBooking.services,
+      services: validBooking.services.map((service) => ({ ...service, addons: [] })),
       customer: expect.objectContaining({ email: "alex@example.com" }),
     }));
     await expect(response.json()).resolves.toMatchObject({ booking: { reference: "MC-TEST1234" } });

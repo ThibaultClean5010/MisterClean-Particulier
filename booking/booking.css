@@ -36,7 +36,7 @@
 .slot-option:hover, .slot-option.is-selected { color: var(--ink); background: var(--green); border-color: var(--green); }
 .selected-date, .field-help { color: var(--muted); }
 .booking-summary { display: grid; border-top: 1px solid var(--line); }
-.summary-row { display: grid; grid-template-columns: 145px 1fr; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.summary-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(90px, 1fr); gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
 .summary-row span { color: var(--muted); }
 .summary-row strong { text-align: right; }
 .payment-note { margin: 24px 0 0; padding: 18px; background: var(--blue-soft); border-left: 5px solid var(--green); }

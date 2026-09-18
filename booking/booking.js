@@ -1,3 +1,5 @@
+import { money, selectionTotals, servicePayload, serviceBreakdown, createAddonOptions, syncAddonOptions } from "./service-addons.js";
+
 const form = document.querySelector("#booking-form");
 const steps = [...document.querySelectorAll("[data-step]")];
 const serviceOptions = document.querySelector("[data-service-options]");
@@ -127,7 +129,16 @@ function renderServices() {
     quantity.addEventListener("change", () => setServiceQuantity(service, Number(quantity.value)));
     quantityLabel.append(quantityText, quantity);
 
-    card.append(imageDiv, body, quantityLabel);
+    const extras = createAddonOptions(service, (code, checked) => {
+      const selected = state.services.find((item) => item.id === service.id);
+      if (!selected) return;
+      selected.selectedAddons = checked
+        ? [...(selected.selectedAddons ?? []), code]
+        : (selected.selectedAddons ?? []).filter((value) => value !== code);
+      state.slot = null;
+      renderServiceSelection();
+    });
+    card.append(imageDiv, body, quantityLabel, extras);
     serviceOptions.append(card);
   }
   const requestedSlug = new URLSearchParams(location.search).get("service");
@@ -136,13 +147,11 @@ function renderServices() {
 }
 
 function totalPriceLabel() {
-  if (!state.services.every((service) => Number.isInteger(service.price_cents))) return "Confirmed separately";
-  const cents = state.services.reduce((total, service) => total + service.price_cents * service.quantity, 0);
-  return `$${Number.isInteger(cents / 100) ? cents / 100 : (cents / 100).toFixed(2)}`;
+  return money(selectionTotals(state.services).cents);
 }
 
 function totalDuration() {
-  return state.services.reduce((total, service) => total + service.duration_minutes * service.quantity, 0);
+  return selectionTotals(state.services).minutes;
 }
 
 function totalQuantity() {
@@ -166,12 +175,14 @@ function setServiceQuantity(service, quantity) {
     return;
   }
   showError();
-  state.services = quantity > 0 ? [...withoutService, { ...service, quantity }] : withoutService;
+  const selectedAddons = state.services.find((item) => item.id === service.id)?.selectedAddons ?? [];
+  state.services = quantity > 0 ? [...withoutService, { ...service, quantity, selectedAddons }] : withoutService;
   state.slot = null;
   document.querySelectorAll(".service-option").forEach((card) => {
     const selectedService = state.services.find((item) => item.id === card.dataset.serviceId);
     card.classList.toggle("is-selected", Boolean(selectedService));
     card.querySelector("select").value = String(selectedService?.quantity ?? 0);
+    syncAddonOptions(card, selectedService);
   });
   renderServiceSelection();
 }
@@ -183,6 +194,7 @@ async function loadAvailability() {
   state.services.forEach((service) => {
     params.append("serviceId", service.id);
     params.append("quantity", String(service.quantity));
+    params.append("addons", JSON.stringify(service.selectedAddons ?? []));
   });
   const response = await fetch(`/api/booking/availability?${params}`);
   if (!response.ok) throw new Error("We could not load availability. Please try again.");
@@ -222,9 +234,9 @@ function summaryRow(label, value) {
 function renderSummary() {
   const summary = document.querySelector("[data-booking-summary]");
   summary.replaceChildren(
-    summaryRow("Services", state.services.map((service) => `${service.quantity > 1 ? `${service.quantity} × ` : ""}${service.name}`).join(", ")),
+    ...serviceBreakdown(state.services).map(([label, value]) => summaryRow(label, value)),
     summaryRow("Duration", `${totalDuration()} min`),
-    summaryRow("Total", totalPriceLabel()),
+    summaryRow("Total (AUD)", totalPriceLabel()),
     summaryRow("When", `${formatDate(state.slot.starts_at)} at ${formatTime(state.slot.starts_at)}`),
     summaryRow("Address", `${field("addressLine1").value}, ${field("suburb").value} SA ${field("postcode").value}`),
     summaryRow("Customer", `${field("firstName").value} ${field("lastName").value}`),
@@ -240,7 +252,7 @@ async function submitBooking() {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
-        services: state.services.map((service) => ({ serviceId: service.id, quantity: service.quantity })),
+        services: state.services.map(servicePayload),
         startsAt: state.slot.starts_at,
         idempotencyKey: state.idempotencyKey,
         customer: { firstName: field("firstName").value, lastName: field("lastName").value, email: field("email").value, phone: field("phone").value },
@@ -258,6 +270,8 @@ async function submitBooking() {
     }
     if (!response.ok) throw new Error("We could not confirm your booking. Please check your details and try again.");
     document.querySelector("[data-booking-reference]").textContent = result.booking.reference;
+    document.querySelector("[data-confirmed-total]").textContent = result.booking.price_label
+      ? `Total: ${result.booking.price_label} AUD · Pay after your service.` : "";
     showStep(7);
   } catch (error) {
     showError(error.message || "Something went wrong. Please try again.");

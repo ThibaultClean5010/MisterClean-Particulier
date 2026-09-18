@@ -1,3 +1,5 @@
+import { money, selectionTotals, servicePayload, createAddonOptions, syncAddonOptions } from "/booking/service-addons.js";
+
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const login = document.querySelector("[data-login]");
 const dashboard = document.querySelector("[data-dashboard]");
@@ -257,6 +259,7 @@ function renderAppointments(bookings) {
       map.rel = "noreferrer";
       map.textContent = address;
       details.append(detailRow("Address", map));
+      if (booking.price_label) details.append(detailRow("Total (AUD)", booking.price_label));
       if (booking.notes) details.append(detailRow("Notes", booking.notes));
 
       const actions = document.createElement("div");
@@ -362,13 +365,11 @@ function setManualMessage(message = "", error = false) {
 }
 
 function manualTotalDuration() {
-  return manualServices.reduce((total, service) => total + service.duration_minutes * service.quantity, 0);
+  return selectionTotals(manualServices).minutes;
 }
 
 function manualTotalPrice() {
-  if (!manualServices.every((service) => Number.isInteger(service.price_cents))) return "Price confirmed separately";
-  const cents = manualServices.reduce((total, service) => total + service.price_cents * service.quantity, 0);
-  return `$${Number.isInteger(cents / 100) ? cents / 100 : (cents / 100).toFixed(2)}`;
+  return money(selectionTotals(manualServices).cents);
 }
 
 function manualTotalQuantity() {
@@ -414,8 +415,10 @@ function renderManualServices() {
         setManualMessage("A booking can contain up to 12 service items.", true);
         return;
       }
-      manualServices = selectedQuantity > 0 ? [...withoutService, { ...service, quantity: selectedQuantity }] : withoutService;
+      const selectedAddons = manualServices.find((item) => item.id === service.id)?.selectedAddons ?? [];
+      manualServices = selectedQuantity > 0 ? [...withoutService, { ...service, quantity: selectedQuantity, selectedAddons }] : withoutService;
       card.classList.toggle("is-selected", selectedQuantity > 0);
+      syncAddonOptions(card, manualServices.find((item) => item.id === service.id));
       manualSlot = undefined;
       createManualBookingButton.disabled = true;
       setManualMessage();
@@ -423,7 +426,17 @@ function renderManualServices() {
       loadManualAvailability();
     });
     quantityLabel.append(quantityText, quantity);
-    card.append(information, quantityLabel);
+    const extras = createAddonOptions(service, (code, checked) => {
+      const selected = manualServices.find((item) => item.id === service.id);
+      if (!selected) return;
+      selected.selectedAddons = checked
+        ? [...(selected.selectedAddons ?? []), code]
+        : (selected.selectedAddons ?? []).filter((value) => value !== code);
+      setManualMessage();
+      renderManualSelection();
+      loadManualAvailability();
+    });
+    card.append(information, quantityLabel, extras);
     manualServiceOptions.append(card);
   }
   renderManualSelection();
@@ -455,6 +468,7 @@ async function loadManualAvailability() {
   manualServices.forEach((service) => {
     params.append("serviceId", service.id);
     params.append("quantity", String(service.quantity));
+    params.append("addons", JSON.stringify(service.selectedAddons ?? []));
   });
   try {
     const { slots } = await api(`/api/booking/availability?${params}`);
@@ -530,7 +544,7 @@ manualBookingForm.addEventListener("submit", async (event) => {
     const result = await api("/api/admin/bookings", {
       method: "POST",
       body: JSON.stringify({
-        services: manualServices.map((service) => ({ serviceId: service.id, quantity: service.quantity })),
+        services: manualServices.map(servicePayload),
         startsAt: manualSlot.starts_at,
         idempotencyKey: manualIdempotencyKey,
         customer: {

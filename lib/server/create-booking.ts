@@ -4,13 +4,13 @@ import { getEnv } from "./env.js";
 import { createBookingEvent } from "./google-calendar.js";
 import { RequestError } from "./http.js";
 import { getSupabaseAdmin } from "./supabase.js";
-import type { BookingInput } from "./validation.js";
+import { toRpcServices, type BookingInput } from "./validation.js";
 
 export async function createBooking(body: BookingInput) {
   const cancellationToken = randomBytes(32).toString("base64url");
   const supabase = getSupabaseAdmin();
   const { data, error } = await supabase.rpc("create_booking_quantities", {
-    p_services: body.services.map(({ serviceId, quantity }) => ({ service_id: serviceId, quantity })),
+    p_services: toRpcServices(body.services),
     p_starts_at: body.startsAt,
     p_customer_first_name: body.customer.firstName,
     p_customer_last_name: body.customer.lastName,
@@ -30,9 +30,10 @@ export async function createBooking(body: BookingInput) {
   if (error?.code === "23P01" || error?.message.includes("SLOT_NOT_AVAILABLE")) {
     throw new RequestError("SLOT_NOT_AVAILABLE", 409);
   }
+  if (error?.code === "22023" || error?.code === "22P02") throw new RequestError("VALIDATION_ERROR", 400);
   if (error) throw error;
 
-  const booking = data as { id: string; reference: string; starts_at: string; ends_at: string; service_names: string[] };
+  const booking = data as { id: string; reference: string; starts_at: string; ends_at: string; service_names: string[]; price_label: string | null };
   await dispatchPendingEmails(booking.id);
 
   const gcalEventId = await createBookingEvent({

@@ -3,7 +3,7 @@ import { RequestError } from "../lib/server/http.js";
 const mocks = vi.hoisted(() => ({ requireAdmin: vi.fn(), getSupabaseAdmin: vi.fn() }));
 vi.mock("../lib/server/admin-auth.js", () => ({ requireAdmin: mocks.requireAdmin }));
 vi.mock("../lib/server/supabase.js", () => ({ getSupabaseAdmin: mocks.getSupabaseAdmin }));
-import handler from "../api/admin/history.js";
+import handler from "../api/admin/bookings.js";
 let query: Record<string, ReturnType<typeof vi.fn>>;
 beforeEach(() => {
   vi.useFakeTimers(); vi.setSystemTime(new Date("2026-10-05T12:00:00Z"));
@@ -16,6 +16,18 @@ beforeEach(() => {
 afterEach(() => { vi.useRealTimers(); vi.restoreAllMocks(); });
 const get = (params = "mode=month&period=2026-09") => handler.fetch(new Request(`https://example.invalid/api/admin/history?${params}`));
 describe("admin history API", () => {
+  it("dispatches the rewritten route to history rather than the upcoming bookings list", async () => {
+    const response = await handler.fetch(new Request("https://example.invalid/api/admin/bookings?report=history&mode=month&period=2026-09"));
+    expect(response.status).toBe(200);
+    expect((await response.json()).current.visits).toBe(0);
+    expect(mocks.requireAdmin).toHaveBeenCalledOnce();
+    expect(query.range).toHaveBeenCalledWith(0, 499);
+  });
+  it("keeps the rewritten endpoint read-only", async () => {
+    const response = await handler.fetch(new Request("https://example.invalid/api/admin/bookings?report=history", { method: "POST" }));
+    expect(response.status).toBe(405);
+    expect(mocks.getSupabaseAdmin).not.toHaveBeenCalled();
+  });
   it("requires admin authentication before accessing history", async () => {
     mocks.requireAdmin.mockRejectedValue(new RequestError("UNAUTHORIZED", 401));
     expect((await get()).status).toBe(401);

@@ -10,6 +10,7 @@
     }
   },
   "rewrites": [
+    { "source": "/api/admin/history", "destination": "/api/admin/bookings?report=history" },
     { "source": "/api/admin/auth/logout", "destination": "/api/admin/auth/session" }
   ],
   "crons": [

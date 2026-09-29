@@ -1,4 +1,5 @@
 import { requireAdmin } from "../../lib/server/admin-auth.js";
+import history from "../../lib/server/admin-history-handler.js";
 import { createBooking } from "../../lib/server/create-booking.js";
 import { errorResponse, json, methodNotAllowed, readJson } from "../../lib/server/http.js";
 import { getSupabaseAdmin } from "../../lib/server/supabase.js";
@@ -6,6 +7,11 @@ import { bookingSchema, parseOrThrow } from "../../lib/server/validation.js";
 
 export default {
   async fetch(request: Request) {
+    // Share one deployed function, keeping the history route read-only and private.
+    const url = new URL(request.url);
+    if (url.pathname === "/api/admin/history" || url.searchParams.get("report") === "history") {
+      return history.fetch(request);
+    }
     if (!["GET", "POST"].includes(request.method)) return methodNotAllowed(["GET", "POST"]);
     try {
       await requireAdmin(request);

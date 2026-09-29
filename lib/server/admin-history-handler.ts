@@ -1,7 +1,7 @@
-import { requireAdmin } from "../../lib/server/admin-auth.js";
-import { buildHistoryReport, historyDateKey, historyPeriod, type HistoryBooking } from "../../lib/server/admin-history.js";
-import { errorResponse, json, methodNotAllowed, RequestError } from "../../lib/server/http.js";
-import { getSupabaseAdmin } from "../../lib/server/supabase.js";
+import { requireAdmin } from "./admin-auth.js";
+import { buildHistoryReport, historyDateKey, historyPeriod, type HistoryBooking } from "./admin-history.js";
+import { errorResponse, json, methodNotAllowed, RequestError } from "./http.js";
+import { getSupabaseAdmin } from "./supabase.js";
 
 export default {
   async fetch(request: Request) {

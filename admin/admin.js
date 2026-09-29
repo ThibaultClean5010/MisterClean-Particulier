@@ -1,4 +1,5 @@
 import { money, selectionTotals, servicePayload, createAddonOptions, syncAddonOptions } from "/booking/service-addons.js";
+import { createHistoryPanel } from "./history.js";
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const login = document.querySelector("[data-login]");
@@ -26,6 +27,7 @@ let manualServices = [];
 let manualSlot;
 let manualIdempotencyKey = crypto.randomUUID();
 let manualAvailabilityRequest = 0;
+const historyPanel = createHistoryPanel(document.querySelector("[data-history]"), api);
 
 async function api(url, options = {}) {
   const response = await fetch(url, {
@@ -394,6 +396,11 @@ function renderManualServices() {
     name.textContent = service.name;
     detail.textContent = `${service.duration_minutes} min · ${service.price_label ?? "Quote"}`;
     information.append(name, detail);
+    if (service.description) {
+      const description = document.createElement("span");
+      description.textContent = service.description;
+      information.append(description);
+    }
 
     const quantityLabel = document.createElement("label");
     const quantityText = document.createElement("span");
@@ -494,6 +501,10 @@ async function loadManualAvailability() {
   } catch (error) {
     if (requestId !== manualAvailabilityRequest) return;
     if (error.status === 401) return location.reload();
+    if (error.message === "SERVICE_ADDON_NOT_AVAILABLE") {
+      manualSlotOptions.textContent = "Service options have changed. Refresh the page and select services again; Steam cleaning is now included in sofa prices.";
+      return;
+    }
     manualSlotOptions.innerHTML = "<p>Availability could not be loaded. Please try again.</p>";
   }
 }
@@ -574,6 +585,8 @@ manualBookingForm.addEventListener("submit", async (event) => {
     if (error.status === 409) {
       setManualMessage("That time has just been booked. Choose another available time.", true);
       await loadManualAvailability();
+    } else if (error.message === "SERVICE_ADDON_NOT_AVAILABLE") {
+      setManualMessage("Service options have changed. Refresh the page and select services again; Steam cleaning is now included in sofa prices.", true);
     } else {
       setManualMessage("The booking could not be created. Check the details and try again.", true);
       createManualBookingButton.disabled = false;
@@ -769,7 +782,7 @@ document.querySelector("[data-calendar-today]").addEventListener("click", () => 
   renderAppointmentCalendar(latestBookings);
 });
 function navigateToAdminSection(hash, { behavior = "smooth", updateHistory = true } = {}) {
-  const sectionHash = ["#dashboard-overview", "#schedule", "#availability", "#customers"].includes(hash) ? hash : "#dashboard-overview";
+  const sectionHash = ["#dashboard-overview", "#schedule", "#availability", "#customers", "#history"].includes(hash) ? hash : "#dashboard-overview";
   const target = document.querySelector(sectionHash);
   if (!target || dashboard.hidden) return;
   const topbarHeight = document.querySelector(".admin-topbar")?.getBoundingClientRect().height ?? 0;
@@ -806,7 +819,7 @@ async function init() {
   try {
     await api("/api/admin/auth/session");
     dashboard.hidden = false;
-    await Promise.all([loadAvailability(), loadBookings()]);
+    await Promise.all([loadAvailability(), loadBookings(), historyPanel.load()]);
     requestAnimationFrame(() => navigateToAdminSection(location.hash, { behavior: "auto", updateHistory: false }));
   } catch (error) {
     if (error.status === 401) login.hidden = false;

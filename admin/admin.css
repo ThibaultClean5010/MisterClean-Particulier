@@ -3,6 +3,68 @@
 .admin-page input { border-color: #cdd9df; }
 .admin-page .button { min-height: 44px; border-radius: 7px; }
 
+/* Read-only history and performance reporting. */
+.history-card { min-width: 0; margin: 28px 0; padding: clamp(18px, 3vw, 32px); scroll-margin-top: var(--admin-anchor-offset); }
+.history-heading { display: flex; align-items: start; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+.history-heading p { margin: 8px 0 0; color: var(--muted); }
+.history-card h3 { margin: 0; font-size: 1.12rem; line-height: 1.4; }
+.history-filters, .history-list-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 14px; margin: 24px 0 16px; }
+.history-card label { display: grid; gap: 7px; min-width: 0; color: var(--ink); font-size: .84rem; font-weight: 700; }
+.history-card input, .history-card select { width: 100%; min-height: 44px; padding: 10px 12px; color: var(--ink); background: #fff; border: 1px solid #cdd9df; border-radius: 7px; font: inherit; }
+.history-card input[type="number"] { max-width: 140px; }
+.history-basis { padding: 14px 16px; color: var(--ink-soft); background: var(--surface-alt); border-left: 3px solid var(--blue-dark); border-radius: 4px; font-size: .85rem; }
+.history-period { margin: 24px 0 12px; color: var(--ink-soft); font-size: .9rem; font-weight: 700; }
+.history-warning { padding: 12px 16px; color: #674413; background: #fff7e6; border: 1px solid #ead19e; border-radius: 7px; font-size: .85rem; }
+.history-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 20px 0 26px; }
+.history-metric { display: grid; align-content: start; gap: 10px; padding: 18px; background: var(--surface-alt); border: 1px solid #dbe4e8; border-radius: 9px; }
+.history-metric > span { color: var(--muted); font-size: .8rem; font-weight: 700; }
+.history-metric strong { color: var(--blue-deep); font-size: clamp(1.35rem, 2vw, 1.85rem); line-height: 1.2; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.history-metric small { color: var(--muted); font-size: .75rem; }
+.history-chart-card { min-width: 0; margin-top: 24px; padding: 20px; border: 1px solid #dbe4e8; border-radius: 9px; }
+.history-chart-heading { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 16px; }
+.history-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .8rem; }
+.history-legend span { display: inline-flex; gap: 6px; align-items: center; }
+.history-legend span::before { width: 10px; height: 10px; content: ""; border-radius: 2px; background: var(--blue-deep); }
+.history-legend span:last-child::before { background: #a1c4d4; }
+.history-chart-hint { margin: 10px 0 0; color: var(--muted); font-size: .78rem; }
+.history-chart-scroll, .history-table-scroll { max-width: 100%; overflow-x: auto; }
+.history-chart { display: grid; grid-template-columns: repeat(var(--history-buckets), minmax(24px, 1fr)); gap: 5px; min-width: calc(var(--history-buckets) * 29px); margin-top: 22px; }
+.history-bar-group { min-width: 0; padding-top: 4px; }
+.history-bar-pair { display: flex; height: 180px; align-items: end; justify-content: center; gap: 3px; border-bottom: 1px solid var(--line-strong); background: repeating-linear-gradient(to top, transparent 0, transparent 44px, #eef2f4 44px, #eef2f4 45px); }
+.history-bar { display: block; width: min(45%, 24px); border-radius: 3px 3px 0 0; background: var(--blue-deep); }
+.history-bar.is-previous { background: #a1c4d4; }
+.history-bar-label { display: block; padding-top: 8px; text-align: center; color: var(--muted); font-size: .72rem; }
+.history-chart-data { margin-top: 22px; font-size: .85rem; }
+.history-chart-data summary { width: fit-content; color: var(--blue-deep); font-weight: 700; cursor: pointer; }
+.history-card table { width: 100%; border-collapse: collapse; font-size: .83rem; text-align: left; }
+.history-card caption { padding: 16px 0 12px; color: var(--muted); font-size: .78rem; text-align: left; }
+.history-card th, .history-card td { padding: 13px 10px; border-bottom: 1px solid #e3eaee; vertical-align: top; }
+.history-card th { color: var(--ink-soft); background: #f5f8fa; font-size: .76rem; }
+.history-card td small { display: block; margin-top: 4px; color: var(--muted); }
+.history-table { min-width: 700px; }
+.history-amount { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.history-badge { display: inline-block; padding: 4px 8px; color: #245535; background: #e8f4eb; border-radius: 5px; white-space: nowrap; font-size: .72rem; font-weight: 700; }
+.history-badge.is-cancelled { color: #91453f; background: #fbefed; }
+.history-service-bars { display: grid; gap: 18px; margin-top: 20px; }
+.history-service-caption { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; font-size: .84rem; }
+.history-service-caption strong { white-space: nowrap; color: var(--blue-deep); }
+.history-service-track { height: 9px; margin-top: 8px; overflow: hidden; border-radius: 4px; background: var(--surface-alt); }
+.history-service-track span { display: block; height: 100%; background: var(--blue-dark); border-radius: inherit; }
+.history-service small { color: var(--muted); }
+.history-list-heading { margin-top: 30px; }
+.history-list-heading p { font-size: .8rem; }
+.history-list-filters label:first-child { flex: 1; min-width: 170px; }
+.history-pagination { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 18px; }
+.history-pagination p { margin: 0; color: var(--muted); font-size: .8rem; }
+.history-empty { color: var(--muted); text-align: center; }
+.history-card button:disabled { opacity: .5; cursor: not-allowed; }
+@media (max-width: 1100px) { .history-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) {
+  .history-metrics { grid-template-columns: 1fr; }
+  .history-filters > *, .history-list-filters > * { flex: 1 1 100%; }
+  .history-chart-card { padding: 14px; }
+}
+
 /* Login */
 .admin-login { display: grid; min-height: 100vh; grid-template-columns: minmax(320px, .9fr) minmax(440px, 1.1fr); background: #fff; }
 .login-intro { display: flex; min-height: 100%; flex-direction: column; justify-content: space-between; gap: 80px; padding: clamp(34px, 6vw, 86px); color: #fff; background: var(--blue-deep); border-left: 8px solid var(--green); }

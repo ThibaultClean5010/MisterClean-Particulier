@@ -26,6 +26,7 @@ export default {
         p_services: toRpcServices(input.services),
         p_local_date: input.date,
       });
+      if (error?.message.includes("SERVICE_ADDON_NOT_AVAILABLE")) throw new RequestError("SERVICE_ADDON_NOT_AVAILABLE", 400);
       if (error?.code === "22023" || error?.code === "22P02") throw new RequestError("VALIDATION_ERROR", 400);
       if (error) throw error;
       return json({ slots: data ?? [] });

@@ -12,7 +12,7 @@ import { createBooking } from "../lib/server/create-booking.js";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const body = {
-  services: [{ serviceId: id, quantity: 2, addons: ["steam-cleaning", "hair-fur-removal"] }],
+  services: [{ serviceId: id, quantity: 2, addons: ["hair-fur-removal"] }],
   startsAt: "2026-10-01T09:00:00+09:30", idempotencyKey: "22222222-2222-4222-8222-222222222222",
   customer: { firstName: "Test", lastName: "Customer", email: "test@example.invalid", phone: "0412345678" },
   address: { line1: "1 Test Street", suburb: "Adelaide", state: "SA", postcode: "5000" },
@@ -50,12 +50,14 @@ describe("addon API integration", () => {
   });
   it("returns an actionable validation error for unavailable extras", async () => {
     mocks.rpc.mockResolvedValue({ error: { code: "22023", message: "SERVICE_ADDON_NOT_AVAILABLE" } });
-    expect((await availability.fetch(query(["steam-cleaning"]))).status).toBe(400);
-    await expect(createBooking(bookingSchema.parse(body))).rejects.toMatchObject({ status: 400 });
+    const response = await availability.fetch(query(["steam-cleaning"]));
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({ error: "SERVICE_ADDON_NOT_AVAILABLE" });
+    await expect(createBooking(bookingSchema.parse(body))).rejects.toMatchObject({ status: 400, message: "SERVICE_ADDON_NOT_AVAILABLE" });
     expect(mocks.emails).not.toHaveBeenCalled();
   });
   it("persists only codes and returns the authoritative price; Calendar receives addon labels", async () => {
-    const names = ["2 × Sofa up to 3 seats (Steam cleaning +$30 per item; Hair and fur removal +$25 per item)"];
+    const names = ["2 × Sofa up to 3 seats (Hair and fur removal +$25 per item)"];
     mocks.rpc.mockResolvedValue({ data: { id: "test", reference: "MC-TEST", starts_at: body.startsAt, ends_at: "2026-10-01T12:40:00+09:30", price_label: "$330", service_names: names }, error: null });
     const request = new Request("https://example.invalid/api/booking/reservations", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ ...body, price_cents: 1 }) });
     const response = await reservations.fetch(request);
@@ -69,7 +71,10 @@ describe("addon API integration", () => {
     mocks.from.mockImplementation((table) => {
       const chain = { select: vi.fn(), eq: vi.fn(), order: vi.fn(), single: vi.fn() };
       chain.select.mockReturnValue(chain); chain.eq.mockReturnValue(chain);
-      const result = table === "services" ? [{ id, addons: [
+      const result = table === "services" ? [{ id, slug: "sofa-up-to-3-seats", price_cents: 14000, addons: [
+        { code: "steam-cleaning", is_active: false, sort_order: 10 },
+        { code: "hair-fur-removal", is_active: true, sort_order: 20 },
+      ] }, { id: "mattress", addons: [
         { code: "off", is_active: false, sort_order: 0 },
         { code: "hair-fur-removal", is_active: true, sort_order: 20 },
         { code: "steam-cleaning", is_active: true, sort_order: 10 },
@@ -79,6 +84,9 @@ describe("addon API integration", () => {
     });
     const response = await config.fetch(new Request("https://example.invalid/api/booking/config"));
     expect(response.status).toBe(200);
-    expect((await response.json()).services[0].addons.map((a: { code: string }) => a.code)).toEqual(["steam-cleaning", "hair-fur-removal"]);
+    const { services } = await response.json();
+    expect(services[0].price_cents).toBe(14000);
+    expect(services[0].addons.map((a: { code: string }) => a.code)).toEqual(["hair-fur-removal"]);
+    expect(services[1].addons.map((a: { code: string }) => a.code)).toEqual(["steam-cleaning", "hair-fur-removal"]);
   });
 });

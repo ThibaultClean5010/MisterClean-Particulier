@@ -27,6 +27,7 @@
 .service-body { display: flex; flex-direction: column; justify-content: space-between; flex: 1; gap: 8px; padding: 16px 20px 20px; min-height: 110px; }
 .service-option strong { color: var(--blue-deep); font-size: 1.08rem; }
 .service-option span { color: var(--muted); }
+.service-body small { color: var(--muted); font-size: .82rem; line-height: 1.5; }
 .service-option em { color: var(--blue-deep); font-size: 1.45rem; font-style: normal; font-weight: 700; margin-top: auto; }
 .service-quantity { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; color: var(--ink); background: var(--surface-alt); border-top: 1px solid var(--line); font-size: .82rem; font-weight: 700; }
 .service-quantity select { min-width: 118px; min-height: 40px; padding: 7px 10px; color: var(--blue-deep); background: #fff; border: 1px solid var(--line-strong); border-radius: 4px; font: inherit; font-weight: 700; }

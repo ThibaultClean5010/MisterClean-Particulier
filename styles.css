@@ -125,6 +125,7 @@ h3 { margin-bottom: 14px; font-size: clamp(1.55rem, 2.3vw, 2.45rem); line-height
 .price-card:hover { border-color: var(--blue-dark); box-shadow: 0 12px 24px rgba(16, 35, 45, 0.11); transform: translateY(-4px); }
 .price-card span { color: var(--muted); font-size: 0.93rem; font-weight: 600; }
 .price-card strong { color: var(--blue-deep); font-size: clamp(2rem, 3vw, 3rem); line-height: 1; }
+.price-card small { margin-top: 10px; color: var(--blue-deep); font-size: .8rem; line-height: 1.4; }
 .offer-image { min-height: 0; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid var(--line-strong); }
 .outdoor-media { min-height: 0; aspect-ratio: 3 / 2; overflow: hidden; border: 1px solid var(--line-strong); }
 .compact-prices, .package-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 26px 0; }

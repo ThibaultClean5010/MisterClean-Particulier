@@ -30,6 +30,7 @@ export async function createBooking(body: BookingInput) {
   if (error?.code === "23P01" || error?.message.includes("SLOT_NOT_AVAILABLE")) {
     throw new RequestError("SLOT_NOT_AVAILABLE", 409);
   }
+  if (error?.message.includes("SERVICE_ADDON_NOT_AVAILABLE")) throw new RequestError("SERVICE_ADDON_NOT_AVAILABLE", 400);
   if (error?.code === "22023" || error?.code === "22P02") throw new RequestError("VALIDATION_ERROR", 400);
   if (error) throw error;
 

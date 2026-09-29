@@ -27,6 +27,20 @@ Le paiement n’est pas effectué en ligne. Le client paie directement après la
 
 ## Architecture
 
+### Historique et comparaison des chiffres
+
+L'administration propose une rubrique **History & figures** (`/admin#history`) : vue mensuelle ou annuelle, comparaison à la période précédente, montants cumulés en AUD, nombre de visites et d'articles, panier moyen des visites chiffrées, graphiques avec tableau accessible, recherche et filtre des annulations, pagination de 20 rendez-vous.
+
+Les calculs utilisent les prix sauvegardés dans les réservations, et non les tarifs actuels. Les quantités et suppléments sont déjà inclus dans le total de réservation. Les dates et changements d'heure sont interprétés dans `Australia/Adelaide` ; l'année est une année civile.
+
+**Base de calcul :** rendez-vous confirmés dont l'heure de fin est passée. Le système ne contient pas de confirmation d'exécution ou d'encaissement : ces chiffres ne sont donc pas un chiffre d'affaires encaissé certifié. Les annulations restent consultables mais sont exclues des totaux. Les prix inconnus sont signalés et exclus des montants et moyennes, sans être transformés en zéro. Les mois/années en cours sont comparés explicitement à une période précédente complète, sans afficher de pourcentage d'évolution trompeur.
+
+L'API `GET /api/admin/history?mode=month&period=2026-09` (ou `mode=year&period=2026`) utilise la même authentification administrateur que le reste du portail et renvoie `Cache-Control: no-store`. Elle lit les réservations par pages de 500, avec erreur explicite pour un rapport de 20 000 lignes ou plus, sans renvoyer de totaux tronqués. Elle ne renvoie ni emails, ni téléphones, ni adresses, ni tokens. Aucun changement de schéma ou migration n'est nécessaire (migrations existantes jusqu'à 013).
+
+Vérifications : `npm test`, `npm run typecheck`, `npm run build`, `npm run seo:audit`. Aperçu local facultatif, sans base de données : après le build, lancer `node scripts/preview-admin-history.mjs`, puis ouvrir `http://127.0.0.1:4174/admin#history`. Ce serveur de **démonstration** écoute uniquement sur la boucle locale, utilise des clients fictifs, refuse toute écriture et n'est pas copié dans `dist` ni utilisé en production.
+
+### Organisation du projet
+
 ```text
 .
 ├── index.html                    Site public
@@ -135,13 +149,13 @@ Le navigateur ne contacte jamais Supabase directement. Il utilise uniquement les
 
 ## Prestations et tarifs
 
-Les prestations sont semées dans `supabase/migrations/003_booking_seed.sql`.
+Les prestations sont semées dans `supabase/migrations/003_booking_seed.sql`. La migration `014_sofa_steam_included.sql` actualise les trois forfaits canapé (Steam inclus, prix et temps compris) ; ne pas réexécuter le seed sur la production.
 
 | Slug | Prestation | Durée | Prix |
 |---|---|---:|---:|
-| `sofa-up-to-3-seats` | Sofa jusqu’à 3 places | 75 min | $110 |
-| `sofa-4-seats` | Sofa 4 places | 80 min | $135 |
-| `sofa-5-seats-plus` | Sofa 5 places et plus | 120 min | $170 |
+| `sofa-up-to-3-seats` | Sofa jusqu’à 3 places, Steam inclus | 90 min | $140 |
+| `sofa-4-seats` | Sofa 4 places, Steam inclus | 100 min | $175 |
+| `sofa-5-seats-plus` | Sofa 5 places et plus, Steam inclus | 145 min | $220 |
 | `dining-chair` | Chaise de salle à manger | 20 min | $30 |
 | `arm-chair` | Fauteuil | 40 min | $60 |
 | `rug` | Tapis | 45 min | $50 |
@@ -605,13 +619,13 @@ Les dernieres mises a jour deja realisees incluent le favicon MisterClean sur le
 
 ## Options de réservation (suppléments)
 
-Les parcours client et administrateur proposent deux options facultatives et décochées par défaut pour les 11 prestations réservables. Les prix ci-dessous sont des tarifs de départ, en AUD **par article**. Les prix de base restent inchangés. Le 14 septembre 2026, après avoir confirmé que Steam cleaning est une option payante, le propriétaire a demandé de fixer les suppléments selon le marché et la prestation. Ces montants sont une proposition commerciale adaptée à MisterClean, pas une moyenne statistique du marché ; la rentabilité reste à ajuster selon le temps réellement passé et les coûts.
+À la demande du propriétaire du 28 septembre 2026, les trois forfaits canapé incluent désormais Steam cleaning pour les tissus compatibles : 140 / 175 / 220 AUD. L'option Steam payante disparaît uniquement pour les canapés, dans les parcours client et administrateur. Hair and fur removal reste facultatif partout, et les deux options restent disponibles pour les huit autres prestations réservables. Les options payantes sont décochées par défaut. Prix en AUD **par article** ; les autres tarifs restent inchangés.
 
 | Prestation | Steam cleaning | Hair and fur removal | Temps supplémentaire vapeur / poils |
 | --- | ---: | ---: | ---: |
-| Canapé jusqu’à 3 places | 30 $ | 25 $ | 15 / 20 min |
-| Canapé 4 places | 40 $ | 30 $ | 20 / 25 min |
-| Canapé 5 places et plus | 50 $ | 40 $ | 25 / 30 min |
+| Canapé jusqu’à 3 places | Inclus | 25 $ | Inclus / 20 min |
+| Canapé 4 places | Inclus | 30 $ | Inclus / 25 min |
+| Canapé 5 places et plus | Inclus | 40 $ | Inclus / 30 min |
 | Chaise de salle à manger | 10 $ | 10 $ | 10 / 10 min |
 | Fauteuil | 15 $ | 15 $ | 10 / 15 min |
 | Tapis | 15 $ | 15 $ | 10 / 15 min |
@@ -621,7 +635,7 @@ Les parcours client et administrateur proposent deux options facultatives et dé
 | Matelas Queen | 20 $ | 15 $ | 15 / 15 min |
 | Matelas King | 25 $ | 20 $ | 15 / 15 min |
 
-Le 18 septembre 2026, le propriétaire a fixé les suppléments Steam cleaning des canapés à 30 / 40 / 50 $ pour jusqu’à 3 / 4 / 5 places et plus. Les autres suppléments, les prix de base et les durées sont inchangés.
+Les anciens suppléments Steam des canapés (30 / 40 / 50 $, fixés le 18 septembre) sont intégrés aux anciens prix de base (110 / 135 / 170 $). Leurs 15 / 20 / 25 minutes sont intégrées une seule fois aux durées, soit 90 / 100 / 145 minutes au total, plus le buffer existant. Les suppléments poils et toutes les autres prestations restent inchangés.
 
 ### Repères de prix consultés le 14 septembre 2026
 
@@ -630,17 +644,19 @@ Le 18 septembre 2026, le propriétaire a fixé les suppléments Steam cleaning d
 - [Squeaky Clean Team, Melbourne](https://squeakycleanteam.com.au/blog/how-much-does-carpet-cleaning-cost-melbourne/) affiche 4,40 $/m² en standard et 6,60 $/m² en nettoyage renforcé : un repère secondaire de travail supplémentaire, pas un supplément vapeur directement comparable et pas un tarif d’Adelaide.
 - [Fleurieu Cleaning, Adelaide](https://fleurieucleaning.com.au/upholstery-cleaning-service/) exclut explicitement le retrait de fourrure de l’aspiration standard. Son prix n’est pas publié sur cette page : les suppléments poils de MisterClean restent notre estimation, modulée pour 10 à 30 minutes de brossage/aspiration supplémentaires par article, et non un tarif concurrent repris.
 
-La vapeur/extraction est incluse dans plusieurs offres concurrentes. Chez MisterClean, l’option est donc annoncée explicitement comme payante, et le texte du site n’annonce plus de vapeur incluse au prix de base. L’option doit correspondre à un travail réellement supplémentaire. Les traitements d’urine/odeurs ne sont pas assimilés au simple retrait de poils.
+Ces repères expliquent la proposition initiale des suppléments de septembre 2026, pas une moyenne statistique ni des prix concurrents vérifiés en temps réel. Depuis la demande du 28 septembre, la vapeur est incluse dans les forfaits canapé de MisterClean. Ailleurs, l'option payante doit correspondre à un travail réellement supplémentaire. Les traitements d’urine/odeurs ne sont pas assimilés au simple retrait de poils.
 
-Les options choisies s’appliquent à toute la quantité d’une prestation. Exemple : 2 canapés 3 places avec les deux options = 2 × (110 + 30 + 25) = 330 $, pour 220 minutes de prestation et un seul buffer de 30 minutes. Pour traiter différemment deux articles identiques, contacter MisterClean ; le formulaire ne répartit pas encore les options à l’intérieur d’une même ligne.
+Les options choisies s’appliquent à toute la quantité d’une prestation. Exemple : 2 canapés 3 places, Steam inclus, avec retrait des poils = 2 × (140 + 25) = 330 $, pour 220 minutes de prestation et un seul buffer de 30 minutes. Pour traiter différemment deux articles identiques, contacter MisterClean ; le formulaire ne répartit pas encore les options à l’intérieur d’une même ligne.
 
-Steam cleaning est un traitement supplémentaire soumis à la compatibilité du tissu, contrôlée sur place. Le supplément vapeur n’est pas facturé si le tissu est incompatible ; le règlement étant après la prestation, le montant est ajusté au moment de l’encaissement (pas de fonction de modification du prix d’une réservation dans l’admin). Hair and fur removal couvre le brossage et l’aspiration supplémentaires, pas le traitement de l’urine ou des odeurs. Les prestations sur devis restent sur devis.
+Steam cleaning est soumis à la compatibilité du tissu, contrôlée sur place. Pour les canapés, il est compris dans le forfait et n'est plus ajouté séparément. Pour les autres prestations, le supplément vapeur n’est pas facturé si le tissu est incompatible ; le règlement étant après la prestation, le montant est ajusté au moment de l’encaissement (pas de fonction de modification du prix d’une réservation dans l’admin). Hair and fur removal couvre le brossage et l’aspiration supplémentaires, pas le traitement de l’urine ou des odeurs. Les prestations sur devis restent sur devis.
 
 ### Mise en service
 
 Appliquer `supabase/migrations/013_booking_service_addons.sql` après les migrations précédentes **avant** de déployer le nouveau code. Cette migration ajoute le catalogue `service_addons`, les instantanés `booking_services.addons` et remplace les fonctions de disponibilité/création avec quantités. Elle a été appliquée en production le 18 septembre 2026, dans une transaction, puis enregistrée sous la version `013` dans le registre Supabase. Les 22 options ont été créées et les réservations existantes ont été conservées. Ne pas relancer cette migration ni les anciennes migrations de seed sur la base existante.
 
 Le serveur reçoit uniquement les codes d’options ; PostgreSQL valide la disponibilité de chaque option pour chaque service et recalcule les prix/durées. Les instantanés gardent les options, leurs tarifs et durées : les confirmations, l’agenda et l’historique continuent d’afficher les choix même après un changement de catalogue. Les anciennes réservations restent inchangées. Modifier les lignes de `service_addons` pour ajuster les tarifs futurs ; aucun tarif n’est codé en dur dans le navigateur. Le schéma de prix est compatible avec les anciens clients qui n’envoient pas d’options.
+
+**Changement du 28 septembre — appliqué en production le 29 septembre 2026 :** après confirmation du propriétaire, `014_sofa_steam_included.sql` a été appliquée dans une transaction et enregistrée sous la version `014` (`sofa_steam_included`) dans le registre Supabase. Les trois forfaits ont été vérifiés : 140 / 175 / 220 AUD, 90 / 100 / 145 minutes, options Steam désactivées. Cette migration fixe uniquement les prix/durées/descriptions des trois canapés et désactive leurs trois options Steam (sans supprimer les lignes). Le catalogue API n'expose que les options actives. Une ancienne sélection contenant encore le supplément Steam d'un canapé est rejetée côté serveur, sans créer de réservation ; la nouvelle interface demande de rafraîchir la page. Les réservations existantes, les instantanés de prix/options et leurs créneaux sont intacts. Les temps et prix absolus empêchent une double addition si la mise à jour de données est rejouée. Après tout déploiement, vérifier les trois forfaits via `/api/booking/config` et les prix de l'accueil, sans effectuer de vraie réservation de test.
 
 Les tests `booking-addons*` couvrent les parcours client/admin, la validation des API, les calculs, la disponibilité, la conservation des anciens rendez-vous et les instantanés d’options. PGlite exécute toutes les migrations dans un PostgreSQL éphémère en mémoire ; Happy DOM vérifie les interactions avec des réponses API simulées. Aucun email, rendez-vous réel ou connexion à Supabase n’est créé par ces tests.
 

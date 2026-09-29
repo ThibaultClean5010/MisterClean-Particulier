@@ -4,25 +4,32 @@ import { bookingSchema, availabilityQuerySchema, toRpcServices } from "../lib/se
 
 export const sofa = {
   id: "11111111-1111-4111-8111-111111111111", slug: "sofa-up-to-3-seats", name: "Sofa up to 3 seats",
-  price_cents: 11000, price_label: "$110", duration_minutes: 75, quantity: 2,
+  price_cents: 14000, price_label: "$140", duration_minutes: 90, quantity: 2,
   addons: [
-    { code: "steam-cleaning", name: "Steam cleaning", price_cents: 3000, duration_minutes: 15, description: "For suitable fabrics only." },
     { code: "hair-fur-removal", name: "Hair and fur removal", price_cents: 2500, duration_minutes: 20, description: "Embedded hair and pet fur." },
   ],
 };
 
 describe("addon estimates and request validation", () => {
   it("keeps the base quote when nothing is selected", () => {
-    expect(selectionTotals([sofa])).toEqual({ cents: 22000, minutes: 150 });
+    expect(selectionTotals([sofa])).toEqual({ cents: 28000, minutes: 180 });
   });
   it("multiplies extras and time by quantity, supports deselection and mixed services", () => {
-    const selected = { ...sofa, selectedAddons: ["steam-cleaning", "hair-fur-removal"] };
+    const selected = { ...sofa, selectedAddons: ["hair-fur-removal"] };
     expect(selectionTotals([selected])).toEqual({ cents: 33000, minutes: 220 });
     expect(selectionTotals([{ ...selected, quantity: 1 }])).toEqual({ cents: 16500, minutes: 110 });
-    expect(selectionTotals([{ ...selected, selectedAddons: ["steam-cleaning"] }])).toEqual({ cents: 28000, minutes: 180 });
-    expect(serviceBreakdown([selected]).map((r) => r[1])).toEqual(["$220", "+$60", "+$50"]);
-    expect(selectionTotals([selected, { ...sofa, quantity: 1 }])).toEqual({ cents: 44000, minutes: 295 });
+    expect(selectionTotals([{ ...selected, selectedAddons: [] }])).toEqual({ cents: 28000, minutes: 180 });
+    expect(serviceBreakdown([selected]).map((r) => r[1])).toEqual(["$280", "+$50"]);
+    expect(selectionTotals([selected, { ...sofa, quantity: 1 }])).toEqual({ cents: 47000, minutes: 310 });
     expect(selectionTotals([])).toEqual({ cents: 0, minutes: 0 });
+  });
+  it("still supports paid Steam and fur extras on other services", () => {
+    const mattress = { price_cents: 9900, duration_minutes: 60, quantity: 2,
+      addons: [
+        { code: "steam-cleaning", price_cents: 1500, duration_minutes: 10 },
+        { code: "hair-fur-removal", price_cents: 1000, duration_minutes: 10 },
+      ], selectedAddons: ["steam-cleaning", "hair-fur-removal"] };
+    expect(selectionTotals([sofa, mattress])).toEqual({ cents: 52800, minutes: 340 });
   });
   it("handles fractional prices and quotes without turning them into free services", () => {
     expect(money(1050)).toBe("$10.50");

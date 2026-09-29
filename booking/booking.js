@@ -114,6 +114,11 @@ function renderServices() {
     body.querySelector("strong").textContent = service.name;
     body.querySelector("span").textContent = `${service.duration_minutes} min`;
     body.querySelector("em").textContent = service.price_label ?? "Quote";
+    if (service.description) {
+      const description = document.createElement("small");
+      description.textContent = service.description;
+      body.append(description);
+    }
 
     const quantityLabel = document.createElement("label");
     quantityLabel.className = "service-quantity";
@@ -198,8 +203,12 @@ async function loadAvailability() {
     params.append("addons", JSON.stringify(service.selectedAddons ?? []));
   });
   const response = await fetch(`/api/booking/availability?${params}`);
+  const result = await response.json();
+  if (!response.ok && result.error === "SERVICE_ADDON_NOT_AVAILABLE") {
+    throw new Error("Our service options have changed. Please refresh this page and select your services again. Steam cleaning is now included in sofa prices.");
+  }
   if (!response.ok) throw new Error("We could not load availability. Please try again.");
-  const { slots } = await response.json();
+  const { slots } = result;
   slotOptions.replaceChildren();
   document.querySelector("[data-selected-date]").textContent = new Intl.DateTimeFormat("en-AU", {
     weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
@@ -268,6 +277,9 @@ async function submitBooking() {
       showStep(4);
       showError("That time was just booked by someone else. Please choose another available time.");
       return;
+    }
+    if (!response.ok && result.error === "SERVICE_ADDON_NOT_AVAILABLE") {
+      throw new Error("Our service options have changed. Please refresh this page and select your services again. Steam cleaning is now included in sofa prices.");
     }
     if (!response.ok) throw new Error("We could not confirm your booking. Please check your details and try again.");
     document.querySelector("[data-booking-reference]").textContent = result.booking.reference;

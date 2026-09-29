@@ -60,6 +60,10 @@
             Customers
           </a>
           <p>Business</p>
+          <a href="#history">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3v17h17M8 16v-5m5 5V7m5 9V4"/></svg>
+            History &amp; figures
+          </a>
           <a href="/">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10h16M5 10l1-6h12l1 6v10H5zM9 20v-6h6v6"/></svg>
             View website
@@ -120,6 +124,41 @@
             </section>
             <h3 class="appointment-list-title">Appointment details</h3>
             <div class="appointment-list" data-booking-list aria-live="polite"></div>
+          </section>
+
+          <section class="admin-card history-card" id="history" data-history aria-labelledby="history-title">
+            <div class="history-heading">
+              <div><p class="section-kicker">Business performance</p><h2 id="history-title">History &amp; figures</h2><p>Compare past bookings, service volumes and saved amounts in AUD.</p></div>
+              <button class="button secondary" type="button" data-history-refresh>Refresh figures</button>
+            </div>
+            <form class="history-filters" data-history-form>
+              <label>View<select data-history-mode><option value="month">Month</option><option value="year">Year</option></select></label>
+              <label data-history-month-label>Month<input type="month" data-history-month min="2000-01" required></label>
+              <label data-history-year-label hidden>Year<input type="number" data-history-year min="2000" step="1" disabled></label>
+              <button class="button primary" type="submit">Compare periods</button>
+            </form>
+            <p class="history-basis">Based on past confirmed bookings and saved prices, including selected extras. Cancelled and future appointments are excluded from totals. These are not verified completed jobs or payments received.</p>
+            <p class="admin-message" data-history-status role="status" aria-live="polite"></p>
+            <div data-history-results hidden>
+              <p class="history-period" data-history-period></p>
+              <p class="history-warning" data-history-warning hidden></p>
+              <div class="history-metrics" data-history-metrics></div>
+              <section class="history-chart-card" aria-labelledby="history-chart-title">
+                <div class="history-chart-heading"><h3 id="history-chart-title">Booking value comparison</h3><div class="history-legend"><span data-history-current-label></span><span data-history-previous-label></span></div></div>
+                <p class="history-chart-hint">AUD · Hover over a bar group for exact amounts, or use the text table below.</p>
+                <p class="history-chart-hint" data-history-scale></p>
+                <div class="history-chart-scroll" tabindex="0" role="region" aria-label="Booking value chart, scroll horizontally on small screens"><div class="history-chart" data-history-chart></div></div>
+                <details class="history-chart-data"><summary>View chart data as a table</summary><div class="history-table-scroll"><table><caption>Booking value and visit counts by period</caption><thead><tr><th scope="col">Day / month</th><th scope="col" data-history-current-column>Selected amount</th><th scope="col" data-history-previous-column>Previous amount</th><th scope="col">Selected visits</th><th scope="col">Previous visits</th></tr></thead><tbody data-history-chart-table></tbody></table></div></details>
+              </section>
+              <section class="history-chart-card" aria-labelledby="history-services-title"><h3 id="history-services-title">Value by service</h3><p class="history-chart-hint">Selected period · quantities and extras included.</p><div class="history-service-bars" data-history-services></div></section>
+              <div class="history-heading history-list-heading"><div><h3>Past appointment history</h3><p>Search and status filters apply only to this list, not to the figures above.</p></div></div>
+              <div class="history-list-filters">
+                <label>Search<input type="search" data-history-search placeholder="Customer, service or reference"></label>
+                <label>Status<select data-history-status-filter><option value="all">All past appointments</option><option value="past-confirmed">Past confirmed</option><option value="cancelled">Cancelled</option></select></label>
+              </div>
+              <div class="history-table-scroll" tabindex="0" role="region" aria-label="Past appointment history, scroll horizontally on small screens"><table class="history-table"><caption>Past appointments in the selected period, newest first</caption><thead><tr><th scope="col">Date &amp; reference</th><th scope="col">Customer</th><th scope="col">Services</th><th scope="col">Items</th><th scope="col">Saved amount</th><th scope="col">Status</th></tr></thead><tbody data-history-rows></tbody></table></div>
+              <div class="history-pagination"><button class="button secondary" type="button" data-history-previous>Previous</button><p data-history-page role="status"></p><button class="button secondary" type="button" data-history-next>Next</button></div>
+            </div>
           </section>
 
           <section class="admin-card customers-card" id="customers">
